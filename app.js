@@ -1,44 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Theme Toggle
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const theme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', theme);
+    // Theme Management
+    const themeToggle = document.getElementById('themeToggle');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
 
-    darkModeToggle.addEventListener('click', () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
+    themeToggle.addEventListener('click', () => {
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
     });
 
     // Load Songs
-    fetch('songs.json')
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('index');
-            document.getElementById('loading').remove();
-
-            data.songs.forEach(song => {
+    const loadSongs = async () => {
+        try {
+            const response = await fetch('songs.json');
+            const { songs } = await response.json();
+            const grid = document.getElementById('songGrid');
+            const loading = document.getElementById('loadingStatus');
+            
+            loading.textContent = `${songs.length} hymns loaded`;
+            
+            songs.forEach(song => {
                 const card = document.createElement('div');
                 card.className = 'song-card';
                 card.innerHTML = `
                     <a href="lyrics/${song.file}">
-                        <span class="song-number">${song.id}.</span>
-                        ${song.title}
-                        <div class="song-meta">
-                            <small>${song.category} • CCLI ${song.CCLI}</small>
-                        </div>
+                        <h3>${song.title}</h3>
+                        <p>${song.category} • #${song.id}</p>
                     </a>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
 
-            // Search Functionality
-            document.getElementById('search').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
+            // Search Implementation
+            document.getElementById('search').addEventListener('input', function() {
+                const term = this.value.toLowerCase();
                 document.querySelectorAll('.song-card').forEach(card => {
-                    const text = card.textContent.toLowerCase();
-                    card.style.display = text.includes(term) ? 'block' : 'none';
+                    card.style.display = card.textContent.toLowerCase().includes(term) 
+                        ? 'block' 
+                        : 'none';
                 });
             });
-        });
+
+        } catch (error) {
+            console.error('Error loading songs:', error);
+            loading.textContent = 'Error loading hymn index';
+        }
+    };
+
+    loadSongs();
 });
