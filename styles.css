@@ -112,32 +112,6 @@ body {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
-}
-
-.lyrics-button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.3rem;
-    background: var(--secondary);
-    color: white;
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    .song-grid {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-    }
-    
-    :root {
-        --base-font: 0.9rem;
-    }
-}
-/* Add to styles.css */
-.lyrics-controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
     flex-wrap: wrap;
 }
 
@@ -155,6 +129,20 @@ body {
     min-width: 100px;
     text-align: center;
 }
+
+@media (max-width: 768px) {
+    .song-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    :root {
+        --base-font: 0.9rem;
+    }
+}
+
+
+
 
 /* Mobile-first media queries */
 @media (min-width: 768px) {
