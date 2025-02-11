@@ -133,3 +133,61 @@ body {
         --base-font: 0.9rem;
     }
 }
+/* Add to styles.css */
+.lyrics-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.lyrics-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--secondary);
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Mobile-first media queries */
+@media (min-width: 768px) {
+    .lyrics-button {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lyrics-controls {
+        flex-direction: column;
+    }
+    
+    .lyrics-button {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Hover/focus states */
+.lyrics-button:hover,
+.lyrics-button:focus {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Specific mobile touch targets */
+@media (pointer: coarse) {
+    .lyrics-button {
+        min-height: 48px; /* Minimum touch target size */
+        padding: 1.2rem 2rem;
+    }
+}
