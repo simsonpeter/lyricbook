@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NJC Songbook - 100 Hymns</title>
+    <title>Digital Hymnal - 100 Songs</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>✞ NJC SongBook ✞</h1>
-        <div class="search-container">
-            <input type="text" id="search" placeholder="Search hymns by title or number...">
-            <button id="darkModeToggle">🌓</button>
+    <header class="app-header">
+        <h1>📖 Church Hymnal</h1>
+        <div class="controls">
+            <input type="text" id="search" placeholder="Search 100 hymns..." aria-label="Search hymns">
+            <button id="themeToggle" aria-label="Toggle theme">🌓</button>
         </div>
     </header>
 
-    <main>
-        <div id="index" class="song-grid"></div>
-        <div id="loading">Loading hymn index...</div>
+    <main id="mainContent">
+        <div class="song-grid" id="songGrid"></div>
+        <div id="loadingStatus" aria-live="polite">Loading hymn index...</div>
     </main>
 
-    <footer>
-        <p>Used under CCLI License #YOUR-LICENSE • All rights reserved</p>
+    <footer class="app-footer">
+        <p>Used under CCLI License • Colossians 3:16</p>
     </footer>
 
-    <script src="app.js"></script>
+    <script src="app.js" defer></script>
 </body>
 </html>
