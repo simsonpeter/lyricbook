@@ -2,88 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>இரத்தக் கோட்டைக்குள்ளே</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazing Grace</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
-        .font-large {
-            --font-size: 1.3rem;
+        .large-text .lyrics-content {
+            font-size: 1.3rem;
         }
     </style>
 </head>
 <body>
-  <div class="lyrics-container">
-    <div class="lyrics-controls">
-        <a href="../index.html" class="lyrics-button" aria-label="Return to song list">
-            ← Back
-        </a>
-        <button class="lyrics-button" id="fontToggle" aria-label="Toggle text size">
-            A+
-        </button>
-        <button class="lyrics-button" onclick="window.print()" aria-label="Print this hymn">
-            Print
-        </button>
-    </div>
+    <div class="lyrics-container">
+        <div class="controls-bar">
+            <a href="../index.html" class="lyric-btn">← Back</a>
+            <button class="lyric-btn" id="fontToggle">A+ Size</button>
+            <button class="lyric-btn" onclick="window.print()">Print</button>
+        </div>
 
-    <!-- Rest of lyrics content -->
-</div>
-
-        <h1>இரத்தக் கோட்டைக்குள்ளே</h1>
+        <h1>Amazing Grace</h1>
         <div class="song-meta">
             <p>CCLI #12345 • John Newton • Classic Hymn</p>
         </div>
 
         <div class="lyrics-content">
-            இரத்தக் கோட்டைக்குள்ளே
-நான் நுழைந்து விட்டேன்
-இனி எதுவும் அணுகாது
-எந்தத் தீங்கும் தீண்டாது
-
-1. நேசரின் இரத்தம் என்மேலே
-நெருங்காது சாத்தான்
-பாசமாய் சிலுவையில் பலியானார்
-பாவத்தை வென்று விட்டார்
-
-2. இம்மட்டும் உதவின எபினேசரே
-இனியும் காத்திடுவார்
-உலகிலே இருக்கும் அவனை விட
-என் தேவன் பெரியவரே
-
-3. தேவனே ஒளியும் மீட்புமானார்
-யாருக்கு அஞ்சிடுவேன்
-அவரே என் வாழ்வின் பெலனானார்
-யாருக்கு பயப்படுவேன்
-
-4. தாய் தன் பிள்ளையை மறந்தாலும்
-மறவாத என் நேசரே
-ஆயனைப் போல நடத்துகிறீர்
-அபிஷேகம் செய்கின்றீர் – என்னை
-
-5. மலைகள் குன்றுகள் விலகினாலும்
-மாறாது உம் கிருபை
-அனாதி சிநேகத்தால் இழுத்துக் கொண்டீர்
-அணைத்து சேர்த்துக் கொண்டீர்
+            Amazing grace! How sweet the sound
+            That saved a wretch like me!
+            I once was lost, but now am found;
+            Was blind, but now I see.
         </div>
     </div>
 
     <script>
-        // Font Size Toggle with INP optimization
+        // Font Size Toggle
         const fontToggle = document.getElementById('fontToggle');
-        let isLarge = localStorage.getItem('fontSize') === 'true';
+        let isLarge = localStorage.getItem('fontLarge') === 'true';
         
         function updateFont() {
-            document.body.classList.toggle('font-large', isLarge);
-            fontToggle.textContent = isLarge ? 'A−' : 'A+';
-            localStorage.setItem('fontSize', isLarge);
+            document.body.classList.toggle('large-text', isLarge);
+            fontToggle.textContent = isLarge ? 'A- Size' : 'A+ Size';
+            localStorage.setItem('fontLarge', isLarge);
         }
         
-        // Initial state
-        updateFont();
+        // Initialize
+        if (localStorage.getItem('fontLarge') === 'true') {
+            document.body.classList.add('large-text');
+        }
         
-        // Optimized click handler
         fontToggle.addEventListener('click', () => {
             isLarge = !isLarge;
             requestAnimationFrame(updateFont);
-        }, { passive: true });
+        });
     </script>
 </body>
 </html>
