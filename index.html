@@ -2,23 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NJC Songbook</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Church Songbook</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
-            <h1>NJC Song Book</h1>
+            <h1>Church Songs</h1>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search songs...">
             </div>
         </header>
 
-        <!-- Song List -->
-        <main class="song-list" id="songList"></main>
+        <main class="song-list" id="songList">
+            <!-- Songs will be loaded here -->
+        </main>
 
         <!-- Song Detail Modal -->
         <div class="modal" id="songModal">
@@ -30,53 +29,48 @@
             </div>
         </div>
 
-        <!-- Loading Indicator -->
         <div class="loading" id="loading">Loading songs...</div>
     </div>
 
     <script>
-        // Progressive Web App features
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-
-        // App Data
-        let songs = [];
-
-        // DOM Elements
-        const songList = document.getElementById('songList');
-        const searchInput = document.getElementById('searchInput');
-
-        // Load songs from JSON
-        fetch('songs.json')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                songs = data;
-                renderSongList(songs);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('loading').textContent = 
-                    'Error loading songs. Please check your connection.';
-            });
+        let songs = []; // Stores all songs
+        
+        // Load songs on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('songs.json')
+                .then(response => response.json())
+                .then(data => {
+                    songs = data;
+                    renderSongList(songs);
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loading').textContent = 
+                        'Error loading songs. Please refresh.';
+                });
+        });
 
         // Render song list
         function renderSongList(songsArray) {
+            const songList = document.getElementById('songList');
             songList.innerHTML = '';
-            songsArray.forEach(song => {
+            
+            songsArray.forEach((song, index) => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
                 songItem.innerHTML = `
                     <div class="song-title">${song.title}</div>
                     <div class="song-author">${song.author}</div>
                 `;
+                
+                // Add click handler
                 songItem.addEventListener('click', () => showSong(song));
                 songList.appendChild(songItem);
             });
         }
 
-        // Show single song
+        // Show song details
         function showSong(song) {
             const modal = document.getElementById('songModal');
             document.getElementById('songTitle').textContent = song.title;
@@ -90,20 +84,25 @@
             document.getElementById('songModal').style.display = 'none';
         }
 
-        // Format lyrics with chords
+        // Format lyrics with line breaks
         function formatLyrics(lyrics) {
-            return lyrics.split('\n').map(line => {
-                return line.replace(/\[(.*?)\]/g, '<span class="chord">$1</span>');
-            }).join('<br>');
+            return Object.values(lyrics).flatMap(section => 
+                section.map(line => 
+                    `<div class="lyric-line">
+                        ${line.chords ? `<span class="chord">${line.chords}</span>` : ''}
+                        ${line.text}
+                    </div>`
+                ).concat('<br>')
+            ).join('');
         }
 
         // Search functionality
-        searchInput.addEventListener('input', function() {
+        document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const filtered = songs.filter(song => 
                 song.title.toLowerCase().includes(searchTerm) ||
-                song.author.toLowerCase().includes(searchTerm) ||
-                song.lyrics.toLowerCase().includes(searchTerm)
+                (song.author && song.author.toLowerCase().includes(searchTerm)) ||
+                JSON.stringify(song.lyrics).toLowerCase().includes(searchTerm)
             );
             renderSongList(filtered);
         });
