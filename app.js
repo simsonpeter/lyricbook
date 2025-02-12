@@ -1,4 +1,15 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme
+    initializeTheme();
+
+    // Add theme toggle listener
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // Rest of your app.js code...
+});document.addEventListener('DOMContentLoaded', async () => {
     // Theme Toggle
     const themeToggle = document.getElementById('themeToggle');
     let currentTheme = localStorage.getItem('theme') || 'light';
