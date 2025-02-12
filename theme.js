@@ -1,16 +1,9 @@
-// Shared theme logic
+// Theme management
 let currentTheme = localStorage.getItem('theme') || 'light';
 
-function initializeTheme() {
+// Apply theme to the document
+function applyTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
-}
-
-function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    localStorage.setItem('theme', currentTheme);
-    
-    // Update theme toggle button text
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
@@ -18,4 +11,16 @@ function toggleTheme() {
 }
 
 // Initialize theme on page load
+function initializeTheme() {
+    applyTheme();
+}
+
+// Toggle between light and dark themes
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+    applyTheme();
+}
+
+// Initialize theme when the script loads
 initializeTheme();
