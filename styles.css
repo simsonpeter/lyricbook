@@ -45,6 +45,7 @@ body {
 }
 
 .song-list {
+    margin-top: 60px; /* Match header height */
     padding: 1rem;
 }
 
@@ -75,14 +76,21 @@ body {
     height: 100%;
     background-color: rgba(0,0,0,0.5);
     overflow-y: auto;
+    z-index: 1000; /* Ensure modal is above header */
 }
 
 .modal-content {
     background-color: white;
-    margin: 2rem;
+    margin: 20px;
     padding: 2rem;
     border-radius: 10px;
     animation: slideIn 0.3s ease-out;
+    position: relative;
+    /* Add spacing for mobile status bars and header */
+    margin-top: 80px; /* Adjust based on your header height */
+    margin-bottom: 20px;
+    max-height: calc(100vh - 100px); /* Prevent overflow */
+    overflow-y: auto; /* Enable scrolling */
 }
 
 .close-btn {
@@ -95,6 +103,7 @@ body {
     white-space: pre-line;
     margin-top: 1rem;
     line-height: 1.8;
+    padding-bottom: 20px; /* Add breathing room at bottom */
 }
 
 .chord {
@@ -120,7 +129,11 @@ body {
         padding: 1rem;
     }
     
-    .app-header {
-        padding: 0.5rem;
-    }
+   .app-header {
+    z-index: 100; /* Lower than modal's z-index */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    height: 60px; /* Explicit height */
+}
 }
