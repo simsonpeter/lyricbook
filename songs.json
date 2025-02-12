@@ -1,20 +1,12 @@
-{
-    "songs": [
-        {
-            "id": 1,
-            "title": "Amazing Grace",
-            "author": "John Newton",
-            "category": "hymn",
-            "lyrics": "[C]Amazing grace! How sweet the sound\n[G]That saved a wretch like me!",
-            "last_updated": "2023-08-20"
-        },
-        {
-            "id": 2,
-            "title": "How Great Thou Art",
-            "author": "Carl Boberg",
-            "category": "hymn",
-            "lyrics": "[G]O Lord my God, when I in awesome wonder\n[C]Consider all the worlds Thy hands have made",
-            "last_updated": "2023-08-20"
-        }
-    ]
-}
+[
+    {
+        "title": "Amazing Grace",
+        "author": "John Newton",
+        "lyrics": "[C]Amazing grace! How sweet the sound\n[G]That saved a wretch like me!\n[F]I once was lost, but now am found;\n[C]Was blind, but now I see."
+    },
+    {
+        "title": "How Great Thou Art",
+        "author": "Carl Boberg",
+        "lyrics": "[G]O Lord my God, when I in awesome wonder\n[C]Consider all the worlds Thy hands have made\n[D]I see the stars, I hear the rolling thunder\n[G]Thy power throughout the universe displayed"
+    }
+]
