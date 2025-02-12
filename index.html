@@ -2,43 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Church Song Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Church Songbook</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Song Manager</h1>
-            <button id="addSongBtn">Add New Song</button>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Church Songs</h1>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search songs...">
+            </div>
         </header>
 
-        <div class="song-list" id="songList"></div>
+        <!-- Song List -->
+        <main class="song-list" id="songList"></main>
 
-        <!-- Edit/Add Modal -->
+        <!-- Song Detail Modal -->
         <div class="modal" id="songModal">
             <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 id="modalTitle">Add New Song</h2>
-                <form id="songForm">
-                    <input type="text" id="songId" hidden>
-                    <input type="text" id="title" placeholder="Song Title" required>
-                    <input type="text" id="author" placeholder="Author">
-                    <select id="category">
-                        <option value="hymn">Hymn</option>
-                        <option value="worship">Worship</option>
-                        <option value="seasonal">Seasonal</option>
-                    </select>
-                    <textarea id="lyrics" placeholder="Enter lyrics with chords..." required></textarea>
-                    <div class="form-actions">
-                        <button type="submit">Save</button>
-                        <button type="button" id="cancelBtn">Cancel</button>
-                    </div>
-                </form>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <h2 id="songTitle"></h2>
+                <div class="song-meta" id="songMeta"></div>
+                <div class="song-lyrics" id="songLyrics"></div>
             </div>
         </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">Loading songs...</div>
     </div>
-    
-    <script src="app.js"></script>
+
+    <script>
+        // Progressive Web App features
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        // App Data
+        let songs = [];
+
+        // DOM Elements
+        const songList = document.getElementById('songList');
+        const searchInput = document.getElementById('searchInput');
+
+        // Load songs from JSON
+        fetch('songs.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                songs = data;
+                renderSongList(songs);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').textContent = 
+                    'Error loading songs. Please check your connection.';
+            });
+
+        // Render song list
+        function renderSongList(songsArray) {
+            songList.innerHTML = '';
+            songsArray.forEach(song => {
+                const songItem = document.createElement('div');
+                songItem.className = 'song-item';
+                songItem.innerHTML = `
+                    <div class="song-title">${song.title}</div>
+                    <div class="song-author">${song.author}</div>
+                `;
+                songItem.addEventListener('click', () => showSong(song));
+                songList.appendChild(songItem);
+            });
+        }
+
+        // Show single song
+        function showSong(song) {
+            const modal = document.getElementById('songModal');
+            document.getElementById('songTitle').textContent = song.title;
+            document.getElementById('songMeta').textContent = `By ${song.author}`;
+            document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('songModal').style.display = 'none';
+        }
+
+        // Format lyrics with chords
+        function formatLyrics(lyrics) {
+            return lyrics.split('\n').map(line => {
+                return line.replace(/\[(.*?)\]/g, '<span class="chord">$1</span>');
+            }).join('<br>');
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filtered = songs.filter(song => 
+                song.title.toLowerCase().includes(searchTerm) ||
+                song.author.toLowerCase().includes(searchTerm) ||
+                song.lyrics.toLowerCase().includes(searchTerm)
+            );
+            renderSongList(filtered);
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('songModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
 </body>
 </html>
