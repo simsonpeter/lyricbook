@@ -1,40 +1,32 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A இரத்தக் கோட்டைக்குள்ளே</title>
+    <title>எங்களுக்குள்ளே வாசம் செய்யும்</title>
     <link rel="stylesheet" href="../styles.css">
-    <script src="../theme.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeTheme();
-            
-            // Add theme toggle to lyrics pages if needed
-            const themeBtn = document.createElement('button');
-            themeBtn.id = 'themeToggle';
-            themeBtn.textContent = '🌓';
-            document.querySelector('.controls-bar').prepend(themeBtn);
-            
-            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-        });
-    </script>
+    <style>
+        .large-text .lyrics-content {
+            font-size: 1.3rem;
+        }
+    </style>
 </head>
 <body>
     <div class="lyrics-container">
- 
         <div class="controls-bar">
-            <!-- Add theme toggle button here -->
-           
+            
             <button class="lyric-btn" id="fontToggle">A+ Size</button>
             <button class="lyric-btn" onclick="window.print()">Print</button>
         </div>
-         <h1>எங்களுக்குள்ளே வாசம் செய்யும்</h1>
+
+        <h1>எங்களுக்குள்ளே வாசம் செய்யும்</h1>
         <div class="song-meta">
            <p>NJC Belgium • Fr.Berchmans • Classic Hymn</p>
         </div>
 
-      
+        <div class="lyrics-content">
             எங்களுக்குள்ளே வாசம் செய்யும் ஆவியானவரே
 இந்நாளில் உம் சித்தம் போல் நடத்திச் செல்லுமையா
 ஆவியானவரே ….. ஆவியானவரே….
@@ -69,7 +61,27 @@
 உற்சாகத்தால் நிரம்ப வேண்டுமே
         </div>
     </div>
-                    
-    </div>
+
+    <script>
+        // Font Size Toggle
+        const fontToggle = document.getElementById('fontToggle');
+        let isLarge = localStorage.getItem('fontLarge') === 'true';
+        
+        function updateFont() {
+            document.body.classList.toggle('large-text', isLarge);
+            fontToggle.textContent = isLarge ? 'A- Size' : 'A+ Size';
+            localStorage.setItem('fontLarge', isLarge);
+        }
+        
+        // Initialize
+        if (localStorage.getItem('fontLarge') === 'true') {
+            document.body.classList.add('large-text');
+        }
+        
+        fontToggle.addEventListener('click', () => {
+            isLarge = !isLarge;
+            requestAnimationFrame(updateFont);
+        });
+    </script>
 </body>
 </html>
