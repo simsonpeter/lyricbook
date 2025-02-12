@@ -2,24 +2,19 @@
     "songs": [
         {
             "id": 1,
-            "title": "இராஜா உம் மாளிகையில்",
-            "file": "song1.html",
-            "category": "Fr. Berchmans",
-            "CCLI": "12345"
+            "title": "Amazing Grace",
+            "author": "John Newton",
+            "category": "hymn",
+            "lyrics": "[C]Amazing grace! How sweet the sound\n[G]That saved a wretch like me!",
+            "last_updated": "2023-08-20"
         },
         {
             "id": 2,
-            "title": "மறவாமல் நினைத்தீரையா",
-            "file": "song2.html",
-            "category": "Fr. Berchmans",
-            "CCLI": "12345"
-        },
-        {
-            "id": 3,
-            "title": "எங்களுக்குள்ளே வாசம்",
-            "file": "song3.html",
-            "category": "Fr. Berchmans",
-           "CCLI": "12345"
+            "title": "How Great Thou Art",
+            "author": "Carl Boberg",
+            "category": "hymn",
+            "lyrics": "[G]O Lord my God, when I in awesome wonder\n[C]Consider all the worlds Thy hands have made",
+            "last_updated": "2023-08-20"
         }
     ]
 }
