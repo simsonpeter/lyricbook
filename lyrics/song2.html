@@ -3,79 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>மறவாமல் நினைத்தீரையா</title>
+    <title>Amazing Grace</title>
     <link rel="stylesheet" href="../styles.css">
-    <style>
-        .large-text .lyrics-content {
-            font-size: 1.3rem;
-        }
-    </style>
+    <link rel="manifest" href="../manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#2c3e50">
+    <script src="../theme.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add theme toggle button
+            const controlsBar = document.querySelector('.controls-bar');
+            const themeToggle = document.createElement('button');
+            themeToggle.id = 'themeToggle';
+            themeToggle.classList.add('lyric-btn');
+            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            controlsBar.prepend(themeToggle);
+
+            // Add event listener
+            themeToggle.addEventListener('click', toggleTheme);
+        });
+    </script>
 </head>
 <body>
-    <div class="lyrics-container">
-        <div class="controls-bar">
-            
-            <button class="lyric-btn" id="fontToggle">A+ Size</button>
-            <button class="lyric-btn" onclick="window.print()">Print</button>
-        </div>
+    <div class="controls-bar">
+    <button id="themeToggle" class="lyric-btn">🌙</button>
+    <button class="lyric-btn" id="fontToggle">A+ Size</button>
+    <button class="lyric-btn" onclick="window.print()">Print</button>
+</div>
 
-        <h1>மறவாமல் நினைத்தீரையா</h1>
+        <h1>Amazing Grace</h1>
         <div class="song-meta">
-           <p>NJC Belgium• Fr.Berchmans • Classic Hymn</p>
+            <p>CCLI #12345 • John Newton • Classic Hymn</p>
         </div>
 
         <div class="lyrics-content">
-மறவாமல் நினைத்தீரையா
-மனதார நன்றி சொல்வேன்
-இரவும் பகலும் எனை நினைத்து
-இதுவரை நடத்தினீரே
-
-நன்றி நன்றி ஐயா ஆ…. ஆ….
-கோடி கோடி நன்றி ஐயா
-
-எபிநேசர் நீர்தானையா
-இதுவரை உதவினீரே
-எல்ரோயீ எல்ரோயீ என்னையும் கண்டீரே
-எப்படி நான் நன்றி சொல்வேன்
-
-பெலவீன நேரங்களில் பெலன் தந்தீரையா
-சுகமானேன் சுகமானேன்
-தழும்புகளால் சுகமானேன்
-என் குடும்ப மருத்துவர் நீரே
-
-தடைகளை உடைத்தீரையா
-தள்ளாடவிடவில்லையே
-சோர்ந்து போன நேரமெல்லாம்
-தூக்கி என்னை சுமந்து
-வாக்கு தந்து தேற்றினீரே
-
-குறைவுகள் அனைத்தையுமே
-மகிமையிலே நிறைவாக்கினீரே-என்
-ஊழியம் செய்வதற்கு போதுமான பணம் தந்து
-மீதம் மீதம் எடுக்கச் செய்தீர்
+            Amazing grace! How sweet the sound
+            That saved a wretch like me!
+            I once was lost, but now am found;
+            Was blind, but now I see.
         </div>
     </div>
-
-    <script>
-        // Font Size Toggle
-        const fontToggle = document.getElementById('fontToggle');
-        let isLarge = localStorage.getItem('fontLarge') === 'true';
-        
-        function updateFont() {
-            document.body.classList.toggle('large-text', isLarge);
-            fontToggle.textContent = isLarge ? 'A- Size' : 'A+ Size';
-            localStorage.setItem('fontLarge', isLarge);
-        }
-        
-        // Initialize
-        if (localStorage.getItem('fontLarge') === 'true') {
-            document.body.classList.add('large-text');
-        }
-        
-        fontToggle.addEventListener('click', () => {
-            isLarge = !isLarge;
-            requestAnimationFrame(updateFont);
-        });
-    </script>
 </body>
 </html>
