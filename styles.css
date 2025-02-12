@@ -46,6 +46,47 @@ body {
     letter-spacing: -0.5px;
 }
 
+/* Controls */
+.controls {
+    max-width: 800px;
+    margin: 1rem auto;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+#search {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 25px;
+    font-size: 1rem;
+    background: var(--background);
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+#themeToggle {
+    background: transparent;
+    border: 2px solid currentColor;
+    color: inherit;
+    padding: 0.8rem;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#themeToggle:hover {
+    background: rgba(var(--secondary-color), 0.1);
+}
+
 /* Song Grid */
 .song-grid {
     display: grid;
@@ -138,37 +179,15 @@ body {
     flex-wrap: wrap;
 }
 
-/* Search Input */
-#search {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid var(--secondary-color);
-    border-radius: 50px;
-    font-size: 1rem;
-    background: var(--background);
-    color: var(--text-color);
-    transition: var(--transition);
-}
-
-#search:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(var(--secondary-color), 0.2);
-}
-
-/* Theme Toggle */
-#themeToggle {
-    background: transparent;
-    border: 2px solid currentColor;
-    color: inherit;
-    padding: 0.8rem;
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-#themeToggle:hover {
-    background: rgba(var(--secondary-color), 0.1);
+/* Lyrics Page Theme Button */
+.lyrics-container .controls-bar #themeToggle {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
 }
 
 /* Responsive Design */
