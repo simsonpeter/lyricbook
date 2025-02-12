@@ -1,9 +1,14 @@
+/* styles.css */
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
+    --accent-color: #8e44ad;
     --background: #ffffff;
-    --text-color: #333333;
+    --text-color: #2c3e50;
     --card-bg: #f8f9fa;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
 }
 
 [data-theme="dark"] {
@@ -12,34 +17,204 @@
     --background: #1a1a1a;
     --text-color: #ffffff;
     --card-bg: #2d2d2d;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
+/* Base Styles */
 body {
+    font-family: 'Arial', sans-serif;
     background: var(--background);
     color: var(--text-color);
-    transition: background 0.3s ease, color 0.3s ease;
+    line-height: 1.8;
+    margin: 0;
+    transition: var(--transition);
 }
 
+/* Header */
 .header {
     background: var(--primary-color);
     color: white;
+    padding: 2rem 1rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+    border-bottom: 4px solid var(--accent-color);
 }
 
-.lyrics-container {
-    background: var(--background);
+.header h1 {
+    font-family: 'Georgia', serif;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* Song Grid */
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.song-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.song-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.song-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.song-card p {
     color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.9rem;
 }
 
+/* Lyrics Page */
+.lyrics-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.lyrics-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    text-align: center;
+    white-space: pre-line;
+    padding: 1rem;
+    font-family: 'Merriweather', serif;
+}
+
+.song-meta {
+    text-align: center;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(var(--primary-color), 0.1);
+    border-radius: var(--border-radius);
+    color: var(--primary-color);
+}
+
+/* Buttons */
 .lyric-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
     background: var(--secondary-color);
     color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: var(--transition);
+    font-weight: 500;
 }
 
 .lyric-btn:hover {
-    transform: scale(1.05);
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.controls-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Search Input */
+#search {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 50px;
+    font-size: 1rem;
+    background: var(--background);
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+#search:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--secondary-color), 0.2);
+}
+
+/* Theme Toggle */
+#themeToggle {
+    background: transparent;
+    border: 2px solid currentColor;
+    color: inherit;
+    padding: 0.8rem;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+#themeToggle:hover {
+    background: rgba(var(--secondary-color), 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .song-grid {
+        padding: 1rem;
+        grid-template-columns: 1fr;
+    }
+    
+    .lyrics-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .lyric-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .controls-bar {
+        gap: 0.75rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .controls-bar {
+        display: none;
+    }
+    
+    .lyrics-container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+    }
+    
+    .lyrics-content {
+        font-size: 12pt;
+        text-align: left;
+        white-space: pre-wrap;
+    }
 }
