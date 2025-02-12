@@ -14,8 +14,8 @@
             const controlsBar = document.querySelector('.controls-bar');
             const themeToggle = document.createElement('button');
             themeToggle.id = 'themeToggle';
-            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
             themeToggle.classList.add('lyric-btn');
+            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
             controlsBar.prepend(themeToggle);
 
             // Add event listener
