@@ -3,88 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>இராஜா உம் மாளிகையில்</title>
+    <title>Amazing Grace</title>
     <link rel="stylesheet" href="../styles.css">
-    <style>
-        .large-text .lyrics-content {
-            font-size: 1.3rem;
-        }
-    </style>
+    <link rel="manifest" href="../manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#2c3e50">
+    <script src="../theme.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add theme toggle button
+            const controlsBar = document.querySelector('.controls-bar');
+            const themeToggle = document.createElement('button');
+            themeToggle.id = 'themeToggle';
+            themeToggle.classList.add('lyric-btn');
+            themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+            controlsBar.prepend(themeToggle);
+
+            // Add event listener
+            themeToggle.addEventListener('click', toggleTheme);
+        });
+    </script>
 </head>
 <body>
     <div class="lyrics-container">
         <div class="controls-bar">
-            
+            <a href="../index.html" class="lyric-btn">← Back</a>
             <button class="lyric-btn" id="fontToggle">A+ Size</button>
             <button class="lyric-btn" onclick="window.print()">Print</button>
         </div>
 
-        <h1>இராஜா உம் மாளிகையில்</h1>
+        <h1>Amazing Grace</h1>
         <div class="song-meta">
-            <p>NJC Belgium• Fr.Berchmans • Classic Hymn</p>
+            <p>CCLI #12345 • John Newton • Classic Hymn</p>
         </div>
 
         <div class="lyrics-content">
-            இராஜா உம் மாளிகையில்
-இராப்பகலாய் அமர்ந்திருப்பேன்-இயேச
-துதித்து மகிழ்ந்திருப்பேன்
-துயரம் மறந்திருப்பேன் – உம்மை
-
-ஆராதனை ஆராதனை
-அப்பா அப்பா உங்களுக்குத்தான்
-
-1. என் பெலனே என்கோட்டையே
-ஆராதனை உமக்கே
-மறைவிடமே என் உறைவிடமே
-ஆராதனை உமக்கே !
-
-2. எங்கும் நிறைந்த யேகோவா ஏலோஹிம்
-ஆராதனை உமக்கே
-எங்கள் நீதியே யேகோவா ஸிட்கேனு
-ஆராதனை உமக்கே !
-
-3. பரிசுத்தமாக்கும் யேகோவா மெக்காதீஸ்
-ஆராதனை உமக்கே
-உருவாக்கும் தெய்வம் யேகோவா ஓசேனு
-ஆராதனை உமக்கே !
-
-4. உன்னதரே உயர்ந்தவரே
-ஆராதனை உமக்கே
-பரிகாரியே பலியானீரே
-ஆராதனை உமக்கே !
-
-5. சீர்படுத்தும் சிருஷ்டிகரே
-ஆராதனை உமக்கே
-ஸ்திரப்படுத்தும் துணையாளரே
-ஆராதனை உமக்கே !
-
-6. தாழ்மையிலே நினைத்தவரே
-ஆராதனை உமக்கே
-ஏழ்மையை மாற்றினீரே
-ஆராதனை உமக்கே 
+            Amazing grace! How sweet the sound
+            That saved a wretch like me!
+            I once was lost, but now am found;
+            Was blind, but now I see.
         </div>
     </div>
-
-    <script>
-        // Font Size Toggle
-        const fontToggle = document.getElementById('fontToggle');
-        let isLarge = localStorage.getItem('fontLarge') === 'true';
-        
-        function updateFont() {
-            document.body.classList.toggle('large-text', isLarge);
-            fontToggle.textContent = isLarge ? 'A- Size' : 'A+ Size';
-            localStorage.setItem('fontLarge', isLarge);
-        }
-        
-        // Initialize
-        if (localStorage.getItem('fontLarge') === 'true') {
-            document.body.classList.add('large-text');
-        }
-        
-        fontToggle.addEventListener('click', () => {
-            isLarge = !isLarge;
-            requestAnimationFrame(updateFont);
-        });
-    </script>
 </body>
 </html>
