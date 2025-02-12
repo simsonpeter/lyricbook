@@ -45,7 +45,6 @@ body {
 }
 
 .song-list {
-    margin-top: 60px; /* Match header height */
     padding: 1rem;
 }
 
@@ -55,16 +54,12 @@ body {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer; /* Make clickable obvious */
+    transition: transform 0.2s;
 }
 
-.song-title {
-    font-weight: 500;
-    margin-bottom: 0.3rem;
-}
-
-.song-author {
-    font-size: 0.9rem;
-    color: #666;
+.song-item:hover {
+    transform: translateY(-2px);
 }
 
 .modal {
@@ -76,34 +71,19 @@ body {
     height: 100%;
     background-color: rgba(0,0,0,0.5);
     overflow-y: auto;
-    z-index: 1000; /* Ensure modal is above header */
+    z-index: 1000;
 }
 
 .modal-content {
     background-color: white;
-    margin: 20px;
+    margin: 2rem;
     padding: 2rem;
     border-radius: 10px;
     animation: slideIn 0.3s ease-out;
-    position: relative;
-    /* Add spacing for mobile status bars and header */
-    margin-top: 80px; /* Adjust based on your header height */
-    margin-bottom: 20px;
-    max-height: calc(100vh - 100px); /* Prevent overflow */
-    overflow-y: auto; /* Enable scrolling */
 }
 
-.close-btn {
-    float: right;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.song-lyrics {
-    white-space: pre-line;
-    margin-top: 1rem;
-    line-height: 1.8;
-    padding-bottom: 20px; /* Add breathing room at bottom */
+.lyric-line {
+    margin: 0.5rem 0;
 }
 
 .chord {
@@ -112,28 +92,23 @@ body {
     margin-right: 0.5rem;
 }
 
-.loading {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-}
-
 @keyframes slideIn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* Mobile optimization */
 @media (max-width: 480px) {
     .modal-content {
         margin: 1rem;
         padding: 1rem;
     }
     
-   .app-header {
-    z-index: 100; /* Lower than modal's z-index */
-    position: fixed;
-    width: 100%;
-    top: 0;
-    height: 60px; /* Explicit height */
-}
+    .app-header {
+        padding: 0.5rem;
+    }
+    
+    .song-item {
+        padding: 0.8rem;
+    }
 }
