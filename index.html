@@ -3,30 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Church Hymnal</title>
+    <title>Church Song Manager</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Georgia&display=swap" rel="stylesheet">
-    <meta name="theme-color" content="#2c3e50">
-    <script src="theme.js" defer></script>
-    <script src="app.js" defer></script>
 </head>
 <body>
-    <header class="header">
-        <h1>📖 Church Hymnal</h1>
-        <div class="controls">
-            <input type="text" id="search" placeholder="Search hymns...">
-            <button id="themeToggle">🌙</button>
+    <div class="container">
+        <header>
+            <h1>Song Manager</h1>
+            <button id="addSongBtn">Add New Song</button>
+        </header>
+
+        <div class="song-list" id="songList"></div>
+
+        <!-- Edit/Add Modal -->
+        <div class="modal" id="songModal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modalTitle">Add New Song</h2>
+                <form id="songForm">
+                    <input type="text" id="songId" hidden>
+                    <input type="text" id="title" placeholder="Song Title" required>
+                    <input type="text" id="author" placeholder="Author">
+                    <select id="category">
+                        <option value="hymn">Hymn</option>
+                        <option value="worship">Worship</option>
+                        <option value="seasonal">Seasonal</option>
+                    </select>
+                    <textarea id="lyrics" placeholder="Enter lyrics with chords..." required></textarea>
+                    <div class="form-actions">
+                        <button type="submit">Save</button>
+                        <button type="button" id="cancelBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </header>
-
-    <main class="main-content">
-        <div class="song-grid" id="songGrid"></div>
-        <div id="loading">Loading hymn index...</div>
-    </main>
-
-    <footer class="footer">
-        <p>Used under CCLI License • Colossians 3:16</p>
-    </footer>
+    </div>
+    
+    <script src="app.js"></script>
 </body>
 </html>
