@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NJC Song Book</title>
+    <title>Church Songbook</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
+        <!-- Header -->
         <header class="app-header">
-            <h1>NJC Song Book</h1>
+            <h1>Church Songs</h1>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search songs in Tamil..">
+                <input type="text" id="searchInput" placeholder="Search songs...">
             </div>
         </header>
 
-        <main class="song-list" id="songList">
-            <!-- Songs will be loaded here -->
-        </main>
+        <!-- Song List -->
+        <main class="song-list" id="songList"></main>
 
         <!-- Song Detail Modal -->
         <div class="modal" id="songModal">
@@ -29,48 +29,68 @@
             </div>
         </div>
 
+        <!-- Loading Indicator -->
         <div class="loading" id="loading">Loading songs...</div>
     </div>
 
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle">
+        <span class="light-icon">🌞</span>
+        <span class="dark-icon">🌙</span>
+    </button>
+
     <script>
-        let songs = []; // Stores all songs
-        
-        // Load songs on startup
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('songs.json')
-                .then(response => response.json())
-                .then(data => {
-                    songs = data;
-                    renderSongList(songs);
-                    document.getElementById('loading').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('loading').textContent = 
-                        'Error loading songs. Please refresh.';
-                });
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Check saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+        }
+
+        // Toggle Theme
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            const isDark = body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark-theme' : '');
         });
+
+        // Song Data
+        let songs = [];
+
+        // Load songs
+        fetch('songs.json')
+            .then(response => response.json())
+            .then(data => {
+                songs = data;
+                renderSongList(songs);
+                document.getElementById('loading').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').textContent = 'Error loading songs.';
+            });
 
         // Render song list
         function renderSongList(songsArray) {
             const songList = document.getElementById('songList');
             songList.innerHTML = '';
             
-            songsArray.forEach((song, index) => {
+            songsArray.forEach(song => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
                 songItem.innerHTML = `
                     <div class="song-title">${song.title}</div>
                     <div class="song-author">${song.author}</div>
                 `;
-                
-                // Add click handler
                 songItem.addEventListener('click', () => showSong(song));
                 songList.appendChild(songItem);
             });
         }
 
-        // Show song details
+        // Show song modal
         function showSong(song) {
             const modal = document.getElementById('songModal');
             document.getElementById('songTitle').textContent = song.title;
@@ -84,7 +104,7 @@
             document.getElementById('songModal').style.display = 'none';
         }
 
-        // Format lyrics with line breaks
+        // Format lyrics
         function formatLyrics(lyrics) {
             return Object.values(lyrics).flatMap(section => 
                 section.map(line => 
