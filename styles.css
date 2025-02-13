@@ -53,7 +53,8 @@ body.dark-theme {
 
 .search-box {
   width: 100%;
-  max-width: 500px;
+  max-width: 500px; /* Adjust as needed */
+  margin: 0 auto; /* Center the search box */
 }
 
 #searchInput {
@@ -62,6 +63,7 @@ body.dark-theme {
   border-radius: 5px;
   border: none;
   font-size: 1rem;
+  text-align: center; /* Center placeholder text */
 }
 
 /* Song List */
