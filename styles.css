@@ -1,114 +1,147 @@
+/* Theme Variables */
 :root {
-    --primary: #2c3e50;
-    --secondary: #3498db;
-    --background: #ffffff;
-    --text: #333333;
+  --primary-light: #2c3e50;
+  --secondary-light: #3498db;
+  --background-light: #ffffff;
+  --text-light: #333333;
+
+  --primary-dark: #3498db;
+  --secondary-dark: #2c3e50;
+  --background-dark: #1a1a1a;
+  --text-dark: #f5f5f5;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* Light Theme (Default) */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: var(--background);
-    color: var(--text);
+  --primary: var(--primary-light);
+  --secondary: var(--secondary-light);
+  --background: var(--background-light);
+  --text: var(--text-light);
+  background-color: var(--background);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
 }
 
+/* Dark Theme */
+body.dark-theme {
+  --primary: var(--primary-dark);
+  --secondary: var(--secondary-dark);
+  --background: var(--background-dark);
+  --text: var(--text-dark);
+}
+
+/* App Container */
 .app-container {
-    max-width: 600px;
-    margin: 0 auto;
-    min-height: 100vh;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
+/* Header */
 .app-header {
-    background-color: var(--primary);
-    color: white;
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  background-color: var(--primary);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .search-box {
-    margin-top: 1rem;
+  margin-top: 10px;
 }
 
 #searchInput {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 25px;
-    border: none;
-    font-size: 1rem;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
 }
 
+/* Song List */
 .song-list {
-    padding: 1rem;
+  display: grid;
+  gap: 10px;
 }
 
 .song-item {
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    cursor: pointer; /* Make clickable obvious */
-    transition: transform 0.2s;
+  background-color: var(--background);
+  color: var(--text);
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .song-item:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
+/* Modal */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    overflow-y: auto;
-    z-index: 1000;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
 }
 
 .modal-content {
-    background-color: white;
-    margin: 2rem;
-    padding: 2rem;
-    border-radius: 10px;
-    animation: slideIn 0.3s ease-out;
+  background-color: var(--background);
+  color: var(--text);
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
 }
 
+.close-btn {
+  float: right;
+  cursor: pointer;
+}
+
+/* Lyrics */
 .lyric-line {
-    margin: 0.5rem 0;
+  margin: 10px 0;
 }
 
 .chord {
-    color: var(--secondary);
-    font-weight: bold;
-    margin-right: 0.5rem;
+  color: var(--secondary);
+  font-weight: bold;
+  margin-right: 5px;
 }
 
-@keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 
-/* Mobile optimization */
-@media (max-width: 480px) {
-    .modal-content {
-        margin: 1rem;
-        padding: 1rem;
-    }
-    
-    .app-header {
-        padding: 0.5rem;
-    }
-    
-    .song-item {
-        padding: 0.8rem;
-    }
+.dark-icon {
+  display: none;
+}
+
+.dark-theme .light-icon {
+  display: none;
+}
+
+.dark-theme .dark-icon {
+  display: inline;
 }
