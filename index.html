@@ -92,11 +92,14 @@
 
         // Show song modal
         function showSong(song) {
-            const modal = document.getElementById('songModal');
-            document.getElementById('songTitle').textContent = song.title;
-            document.getElementById('songMeta').textContent = `By ${song.author}`;
-            document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
-            modal.style.display = 'block';
+  const modal = document.getElementById('songModal');
+  document.getElementById('songTitle').textContent = song.title;
+  document.getElementById('songMeta').textContent = `By ${song.author}`;
+  document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
+  modal.style.display = 'block';
+  
+  // Scroll to top when modal opens
+  modal.scrollTo(0, 0);
         }
 
         // Close modal
