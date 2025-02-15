@@ -1,192 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta"> <!-- Changed to Tamil language -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tamil Church Songbook</title>
+    <title>தமிழ் கிறிஸ்தவ பாடல் புத்தகம்</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
-        <header>
+        <header class="app-header">
             <h1>தமிழ் கிறிஸ்தவ பாடல்கள்</h1>
             <div class="search-container">
-                <input type="text" id="search" placeholder="பாடலை தேடுங்கள்...">
+                <input type="text" id="search" placeholder="பாடலை தேடுங்கள்..." aria-label="Search songs">
             </div>
         </header>
 
         <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
+        <nav class="tabs">
+            <button class="tab active" data-tab="all" aria-current="page">அனைத்து பாடல்கள்</button>
             <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
-        </div>
+        </nav>
 
         <!-- Song List -->
-        <main id="song-list"></main>
+        <main id="song-list" class="grid-container"></main>
 
         <!-- Song Modal -->
-        <div class="modal" id="modal">
+        <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="modal-title"></h2>
                     <div class="modal-actions">
-                        <button id="bookmark-btn">☆</button>
-                        <span class="close" onclick="closeModal()">×</span>
+                        <button id="bookmark-btn" aria-label="Bookmark this song">☆</button>
+                        <button class="close" onclick="closeModal()" aria-label="Close">×</button>
                     </div>
                 </div>
-                <div id="modal-lyrics"></div>
+                <div id="modal-lyrics" class="lyrics-container"></div>
             </div>
         </div>
 
-        <!-- Loading/Error State -->
-        <div id="status">
+        <!-- Status Messages -->
+        <div id="status" class="status-message hidden">
             <div class="loader"></div>
             <p>பாடல்கள் ஏற்றப்படுகின்றன...</p>
         </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast hidden"></div>
     </div>
 
     <script>
-        // State Management
-        let songs = [];
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-        
+        // Enhanced App State Management
+        const state = {
+            songs: [],
+            filteredSongs: [],
+            bookmarks: JSON.parse(localStorage.getItem('bookmarks')) || [],
+            currentTab: 'all',
+            searchQuery: '',
+            currentSong: null
+        };
+
         // DOM Elements
         const elements = {
             search: document.getElementById('search'),
             songList: document.getElementById('song-list'),
             modal: document.getElementById('modal'),
-            status: document.getElementById('status')
+            status: document.getElementById('status'),
+            toast: document.getElementById('toast')
         };
 
-        // Initialize App
+        // Event Listeners
         window.addEventListener('DOMContentLoaded', initApp);
+        window.addEventListener('keydown', handleKeyboardNavigation);
 
         async function initApp() {
             try {
-                // Load Songs
+                showLoading();
                 const response = await fetch('songs.json');
-                if (!response.ok) throw new Error('Failed to load songs');
                 
-                songs = await response.json();
-                if (!Array.isArray(songs)) throw new Error('Invalid song data');
+                if (!response.ok) throw new Error('பாடல் தரவைப் பெறுவதில் பிழை');
                 
-                // Initial Render
-                renderSongList(songs);
-                elements.status.style.display = 'none';
+                const data = await response.json();
+                if (!Array.isArray(data)) throw new Error('தவறான பாடல் வடிவம்');
                 
-                // Setup Event Listeners
-                setupEventListeners();
+                state.songs = data.map(song => ({
+                    ...song,
+                    searchText: `${song.title} ${song.content}`.toLowerCase()
+                }));
+                
+                updateUI();
+                hideLoading();
                 
             } catch (error) {
                 showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
             }
         }
 
-        function setupEventListeners() {
-            // Tab Switching
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        function updateUI() {
+            // Apply current filters
+            state.filteredSongs = state.songs.filter(song => {
+                const matchesSearch = song.searchText.includes(state.searchQuery.toLowerCase());
+                const isBookmarked = state.bookmarks.includes(song.id);
+                
+                return state.currentTab === 'bookmarks' ? (matchesSearch && isBookmarked) : matchesSearch;
             });
 
-            // Search Functionality
-            elements.search.addEventListener('input', (e) => {
-                filterSongs(e.target.value.toLowerCase());
-            });
-
-            // Bookmarking
-            document.getElementById('bookmark-btn').addEventListener('click', toggleBookmark);
+            renderSongList();
+            updateTabIndicator();
         }
 
-        function switchTab(tab) {
-            // Update UI
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-            
-            // Filter songs
-            const searchTerm = elements.search.value.toLowerCase();
-            filterSongs(searchTerm, tab === 'bookmarks');
+        function renderSongList() {
+            elements.songList.innerHTML = state.filteredSongs
+                .map(song => `
+                    <article class="song-card" data-id="${song.id}" tabindex="0">
+                        <h3>${song.title}</h3>
+                        ${song.author ? `<p class="author">${song.author}</p>` : ''}
+                        <button class="preview-btn" onclick="showSong('${song.id}')" aria-label="View song">
+                            பாடலைப் பார்க்க
+                        </button>
+                    </article>
+                `)
+                .join('');
         }
 
-        function filterSongs(term, bookmarksOnly = false) {
-            let filtered = songs;
-            
-            if (bookmarksOnly) {
-                filtered = filtered.filter(song => bookmarks.includes(song.id));
-            }
-            
-            filtered = filtered.filter(song => 
-                song.title.toLowerCase().includes(term) || 
-                (song.content.toLowerCase().includes(term))
-            );
-            
-            renderSongList(filtered);
-        }
-
-        function renderSongList(songs) {
-            elements.songList.innerHTML = songs.map(song => `
-                <div class="song-card" data-id="${song.id}" onclick="showSong('${song.id}')">
-                    <h3>${song.title}</h3>
-                    ${song.author ? `<p>${song.author}</p>` : ''}
-                </div>
-            `).join('');
-        }
-
+        // Enhanced Modal Handling
         function showSong(id) {
-            const song = songs.find(s => s.id === id);
-            if (!song) return;
+            state.currentSong = state.songs.find(s => s.id === id);
+            if (!state.currentSong) return;
 
-            // Update Modal
-            document.getElementById('modal-title').textContent = song.title;
-            document.getElementById('modal-lyrics').innerHTML = song.content
-                .split('\n').map(line => `<div class="lyric-line">${line}</div>`).join('');
+            // Update Modal Content
+            document.getElementById('modal-title').textContent = state.currentSong.title;
+            document.getElementById('modal-lyrics').innerHTML = formatLyrics(state.currentSong.content);
             
-            // Update Bookmark Button
-            const bookmarkBtn = document.getElementById('bookmark-btn');
-            bookmarkBtn.classList.toggle('bookmarked', bookmarks.includes(id));
+            // Update Bookmark State
+            const isBookmarked = state.bookmarks.includes(id);
+            document.getElementById('bookmark-btn').classList.toggle('active', isBookmarked);
             
+            // Accessibility Updates
+            elements.modal.setAttribute('aria-hidden', 'false');
             elements.modal.style.display = 'block';
+            document.body.classList.add('modal-open');
         }
 
+        function formatLyrics(content) {
+            return content.split('\n')
+                .map(line => line.trim())
+                .filter(line => line)
+                .map(line => `<div class="lyric-line">${line}</div>`)
+                .join('');
+        }
+
+        // Enhanced Bookmark Functionality
         function toggleBookmark() {
-            const songId = document.querySelector('.modal-open')?.dataset?.id;
-            if (!songId) return;
+            if (!state.currentSong) return;
 
-            const index = bookmarks.indexOf(songId);
+            const index = state.bookmarks.indexOf(state.currentSong.id);
             if (index > -1) {
-                bookmarks.splice(index, 1);
+                state.bookmarks.splice(index, 1);
+                showToast('புத்தககுறி நீக்கப்பட்டது');
             } else {
-                bookmarks.push(songId);
+                state.bookmarks.push(state.currentSong.id);
+                showToast('புத்தககுறி சேர்க்கப்பட்டது');
             }
-            
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            filterSongs(elements.search.value.toLowerCase());
+
+            localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+            updateUI();
         }
 
+        // New Features
+        function showToast(message) {
+            elements.toast.textContent = message;
+            elements.toast.classList.remove('hidden');
+            setTimeout(() => elements.toast.classList.add('hidden'), 2000);
+        }
+
+        function handleKeyboardNavigation(event) {
+            if (event.key === 'Escape' && elements.modal.style.display === 'block') {
+                closeModal();
+            }
+        }
+
+        // Accessibility Improvements
         function closeModal() {
+            elements.modal.setAttribute('aria-hidden', 'true');
             elements.modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.querySelector('.song-card:focus')?.focus();
+        }
+
+        function showLoading() {
+            elements.status.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            elements.status.classList.add('hidden');
         }
 
         function showError(message) {
             elements.status.innerHTML = `
-                <div class="error">
-                    <h3>பிழை!</h3>
+                <div class="error-message">
+                    <h3>எதிர்பாராத பிழை!</h3>
                     <p>${message}</p>
-                    <p>தயவு செய்து பின்வருவனவற்றை சரிபார்க்கவும்:</p>
-                    <ul>
-                        <li>songs.json கோப்பு உள்ளது</li>
-                        <li>சரியான JSON வடிவம்</li>
-                        <li>இணைய இணைப்பு</li>
-                    </ul>
+                    <button onclick="location.reload()">மீண்டும் முயற்சிக்கவும்</button>
                 </div>
             `;
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target === elements.modal) {
-                closeModal();
-            }
+        // Initialize Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
         }
     </script>
 </body>
