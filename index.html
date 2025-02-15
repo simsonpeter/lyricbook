@@ -165,7 +165,7 @@
         .modal-content {
             background: var(--card-bg);
             margin: 2rem auto;
-            padding: 2rem;
+            padding: 1rem;
             max-width: 800px;
             border-radius: 1rem;
             max-height: 80vh;
@@ -178,6 +178,61 @@
         @keyframes modalOpen {
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        #bookmark-btn {
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+            color: var(--accent);
+            transition: transform 0.2s;
+        }
+
+        #bookmark-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .close {
+            font-size: 2.5rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 0.5rem;
+            color: var(--text);
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        .lyrics-container {
+            padding: 1rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
         }
 
         .loading-container {
@@ -232,8 +287,8 @@
                 <div class="modal-header">
                     <h2 id="modal-title"></h2>
                     <div class="modal-actions">
-                        <button id="bookmark-btn">☆</button>
-                        <span class="close" onclick="closeModal()">×</span>
+                        <button id="bookmark-btn" aria-label="புத்தககுறி">☆</button>
+                        <button class="close" onclick="closeModal()" aria-label="மூடு">&times;</button>
                     </div>
                 </div>
                 <div id="modal-lyrics" class="lyrics-container"></div>
