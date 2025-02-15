@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Church Songbook</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Tamil Church Songbook</title>
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -52,60 +51,51 @@
     </button>
 
     <script>
-          // Theme Toggle
+        // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) body.classList.add(savedTheme);
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark-theme' : '');
-        });
-
-        // App Data
-        let songs = [];
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
         let currentTab = 'all';
         let currentSong = null;
-
-        // DOM Elements
-        const songList = document.getElementById('songList');
-        const searchInput = document.getElementById('searchInput');
-        const bookmarkButton = document.getElementById('bookmarkButton');
+        let songs = [];
+        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
         // Initialize
-        fetch('songs.json')
-            .then(response => response.json())
-            .then(data => {
-                songs = data;
-                renderSongList(songs);
-                document.getElementById('loading').style.display = 'none';
-            })
-            .catch(console.error);
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('songs.json')
+                .then(response => response.json())
+                .then(data => {
+                    songs = data;
+                    renderSongList(songs);
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loading').textContent = 'Failed to load songs';
+                });
+        });
 
         // Tabs
         document.getElementById('allSongsTab').addEventListener('click', () => switchTab('all'));
         document.getElementById('bookmarksTab').addEventListener('click', () => switchTab('bookmarks'));
 
         // Bookmark functionality
-        bookmarkButton.addEventListener('click', function() {
+        document.getElementById('bookmarkButton').addEventListener('click', function() {
             if (!currentSong) return;
-            
             const index = bookmarks.indexOf(currentSong.id);
             if (index > -1) {
                 bookmarks.splice(index, 1);
-                this.parentElement.classList.remove('bookmarked');
+                this.classList.remove('bookmarked');
             } else {
                 bookmarks.push(currentSong.id);
-                this.parentElement.classList.add('bookmarked');
+                this.classList.add('bookmarked');
             }
             localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
             if (currentTab === 'bookmarks') switchTab('bookmarks');
         });
 
-        // Render songs
+        // Core functions
         function renderSongList(songsArray) {
+            const songList = document.getElementById('songList');
             songList.innerHTML = '';
             songsArray.forEach(song => {
                 const songItem = document.createElement('div');
@@ -125,44 +115,25 @@
             document.getElementById('songTitle').textContent = song.title;
             document.getElementById('songMeta').textContent = `By ${song.author}`;
             document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
-            bookmarkButton.parentElement.classList.toggle('bookmarked', bookmarks.includes(song.id));
+            document.getElementById('bookmarkButton').classList.toggle('bookmarked', bookmarks.includes(song.id));
             modal.style.display = 'block';
         }
 
         function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`${tab}Tab`).classList.add('active');
-  
-  const searchTerm = searchInput.value.toLowerCase();
-  
-  const filtered = tab === 'all' 
-    ? songs.filter(s => 
-        s.title.toLowerCase().includes(searchTerm) ||
-        (s.author && s.author.toLowerCase().includes(searchTerm))
-    : songs.filter(s => 
-        bookmarks.includes(s.id) && (
-          s.title.toLowerCase().includes(searchTerm) ||
-          (s.author && s.author.toLowerCase().includes(searchTerm))
-        );
-  
-  renderSongList(filtered);
-}
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            const filtered = tab === 'all' 
+                ? songs.filter(s => s.title.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()))
+                : songs.filter(s => bookmarks.includes(s.id));
+            renderSongList(filtered);
         }
 
         function formatLyrics(lyrics) {
             return Object.values(lyrics).flatMap(section => 
-                section.map(line => 
-                    `<div class="lyric-line">
-                        ${line.chords ? `<span class="chord">${line.chords}</span>` : ''}
-                        ${line.text}
-                    </div>`
-                ).concat('<br>')
+                section.map(line => `<div>${line.chords ? `<span>${line.chords}</span>` : ''}${line.text}</div>`)
             ).join('');
         }
-
-        // Search
-        searchInput.addEventListener('input', () => switchTab(currentTab));
 
         // Close modal
         function closeModal() {
@@ -170,9 +141,14 @@
         }
 
         window.onclick = function(event) {
-            const modal = document.getElementById('songModal');
-            if (event.target === modal) closeModal();
+            if (event.target === document.getElementById('songModal')) closeModal();
         }
+
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark-theme' : '');
+        });
     </script>
 </body>
 </html>
