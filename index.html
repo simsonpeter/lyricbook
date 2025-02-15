@@ -52,22 +52,32 @@
             --toggle-bg: var(--night-toggle-bg);
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1001;
-            background: var(--toggle-bg);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text);
-            box-shadow: 0 2px 4px var(--shadow);
+            .theme-toggle {
+        position: fixed;
+        bottom: 1rem;  /* Changed from top */
+        right: 1rem;
+        z-index: 1001;
+        background: var(--toggle-bg);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text);
+        box-shadow: 0 2px 8px var(--shadow);
+        font-size: 1.1rem;
+    
         }
+            /* Add mobile adjustment */
+    @media (max-width: 768px) {
+        .theme-toggle {
+            bottom: 0.5rem;
+            right: 0.5rem;
+            padding: 0.6rem 1rem;
+        }
+    }
 
         .container {
             max-width: 1200px;
