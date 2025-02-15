@@ -89,6 +89,28 @@
             box-shadow: 0 4px 6px var(--shadow);
         }
 
+        .verse-of-the-day {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px var(--shadow);
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .verse-of-the-day .verse-text {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .verse-of-the-day .verse-ref {
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
         .search-container {
             max-width: 600px;
             margin: 1rem auto 0;
@@ -275,6 +297,12 @@
             </div>
         </header>
 
+        <!-- Verse of the Day Section -->
+        <div class="verse-of-the-day">
+            <div class="verse-text" id="verse-text">"நான் உங்களை விட்டுப் பிரியேன், உங்களைக் கைவிடேன் என்று கர்த்தர் உரைக்கிறார்"</div>
+            <div class="verse-ref" id="verse-ref">- எபிரெயர் 13:5</div>
+        </div>
+
         <nav class="tabs">
             <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
             <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
@@ -326,8 +354,34 @@
             modalLyrics: document.getElementById('modal-lyrics'),
             bookmarkBtn: document.getElementById('bookmark-btn'),
             loading: document.getElementById('loading'),
-            error: document.getElementById('error')
+            error: document.getElementById('error'),
+            verseText: document.getElementById('verse-text'),
+            verseRef: document.getElementById('verse-ref')
         };
+
+        // Verse of the Day Data
+        const verses = [
+            {
+                text: "நான் உங்களை விட்டுப் பிரியேன், உங்களைக் கைவிடேன் என்று கர்த்தர் உரைக்கிறார்",
+                ref: "எபிரெயர் 13:5"
+            },
+            {
+                text: "கர்த்தரை நோக்கி உங்கள் வழிகளை ஒப்புக்கொள்ளுங்கள்; அவர் உங்களை நடத்துவார்",
+                ref: "சங்கீதம் 37:5"
+            },
+            {
+                text: "எல்லா மனிதருக்கும் இனியவனாயிருக்க முயலுங்கள்",
+                ref: "ரோமர் 12:18"
+            }
+        ];
+
+        // Set Verse of the Day
+        function setVerseOfTheDay() {
+            const today = new Date().getDate();
+            const verse = verses[today % verses.length];
+            elements.verseText.textContent = `"${verse.text}"`;
+            elements.verseRef.textContent = `- ${verse.ref}`;
+        }
 
         // Night Mode Functions
         function toggleNightMode() {
@@ -370,6 +424,7 @@
                 
                 setupEventListeners();
                 updateUI();
+                setVerseOfTheDay();
                 
             } catch (error) {
                 showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
