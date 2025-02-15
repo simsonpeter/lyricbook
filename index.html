@@ -172,6 +172,25 @@
             box-shadow: 0 6px 12px var(--shadow);
         }
 
+        .about-us {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px var(--shadow);
+            text-align: center;
+        }
+
+        .about-us h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .about-us p {
+            line-height: 1.8;
+            color: var(--text);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -306,9 +325,16 @@
         <nav class="tabs">
             <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
             <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
+            <button class="tab" data-tab="about">எங்களைப் பற்றி</button>
         </nav>
 
         <main id="song-list" class="grid-container"></main>
+
+        <!-- About Us Section -->
+        <div id="about-us" class="about-us" style="display: none;">
+            <h2>எங்களைப் பற்றி</h2>
+            <p>இந்த பாடல் புத்தகம் தமிழ் கிறிஸ்தவ சமூகத்திற்காக உருவாக்கப்பட்டது. எங்கள் நோக்கம் பாடல்கள் மூலம் ஆன்மீக பலத்தையும் ஊக்கத்தையும் வழங்குவதாகும். எங்கள் குழுவில் பல தன்னார்வலர்கள் உள்ளனர், அவர்கள் இந்த தளத்தை பராமரித்து வருகின்றனர்.</p>
+        </div>
 
         <div id="modal" class="modal">
             <div class="modal-content">
@@ -356,7 +382,8 @@
             loading: document.getElementById('loading'),
             error: document.getElementById('error'),
             verseText: document.getElementById('verse-text'),
-            verseRef: document.getElementById('verse-ref')
+            verseRef: document.getElementById('verse-ref'),
+            aboutUs: document.getElementById('about-us')
         };
 
         // Verse of the Day Data
@@ -466,6 +493,7 @@
             updateTabIndicator();
             filterSongs();
             renderSongList();
+            toggleAboutUsSection();
         }
 
         function updateTabIndicator() {
@@ -491,6 +519,11 @@
                     </div>
                 `)
                 .join('');
+        }
+
+        function toggleAboutUsSection() {
+            elements.aboutUs.style.display = state.currentTab === 'about' ? 'block' : 'none';
+            elements.songList.style.display = state.currentTab === 'about' ? 'none' : 'grid';
         }
 
         function showSong(songId) {
