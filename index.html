@@ -16,7 +16,6 @@
             --shadow: rgba(0, 0, 0, 0.1);
             --toggle-bg: #dfe6e9;
             
-            /* Night mode variables */
             --night-primary: #2d3436;
             --night-secondary: #74b9ff;
             --night-accent: #fdcb6e;
@@ -53,6 +52,23 @@
             --toggle-bg: var(--night-toggle-bg);
         }
 
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            background: var(--toggle-bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text);
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -68,21 +84,6 @@
             border-radius: 0 0 1rem 1rem;
             box-shadow: 0 4px 6px var(--shadow);
             position: relative;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--toggle-bg);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text);
         }
 
         .search-container {
@@ -263,7 +264,6 @@
     </style>
 </head>
 <body>
-    <!-- Add theme toggle button -->
     <button class="theme-toggle" onclick="toggleNightMode()">
         <span class="theme-icon">🌙</span>
         <span class="theme-text">மாற்று</span>
@@ -277,12 +277,56 @@
             </div>
         </header>
 
-        <!-- Rest of your HTML remains the same -->
-        <!-- ... (previous HTML content) ... -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
+            <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
+        </nav>
+
+        <main id="song-list" class="grid-container"></main>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title"></h2>
+                    <div class="modal-actions">
+                        <button id="bookmark-btn">☆</button>
+                        <span class="close" onclick="closeModal()">×</span>
+                    </div>
+                </div>
+                <div id="modal-lyrics" class="lyrics-container"></div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading-container">
+            <div class="loader"></div>
+            <p>பாடல்கள் ஏற்றப்படுகின்றன...</p>
+        </div>
+
+        <div id="error" class="error-container"></div>
     </div>
 
     <script>
-        // Add night mode functionality
+        const state = {
+            songs: [],
+            filteredSongs: [],
+            bookmarks: JSON.parse(localStorage.getItem('bookmarks')) || [],
+            currentTab: 'all',
+            searchQuery: '',
+            currentSongId: null
+        };
+
+        const elements = {
+            search: document.getElementById('search'),
+            songList: document.getElementById('song-list'),
+            modal: document.getElementById('modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalLyrics: document.getElementById('modal-lyrics'),
+            bookmarkBtn: document.getElementById('bookmark-btn'),
+            loading: document.getElementById('loading'),
+            error: document.getElementById('error')
+        };
+
+        // Night Mode Functions
         function toggleNightMode() {
             document.body.classList.toggle('night-mode');
             const isNightMode = document.body.classList.contains('night-mode');
@@ -297,15 +341,152 @@
                 '🌙 <span class="theme-text">மாற்று</span>';
         }
 
-        // Initialize night mode from localStorage
+        // Initialize night mode
         const savedNightMode = localStorage.getItem('nightMode') === 'true';
         if (savedNightMode) {
             document.body.classList.add('night-mode');
             updateThemeButton(true);
         }
 
-        // Rest of your JavaScript remains the same
-        // ... (previous JavaScript content) ...
+        // Song Loading Functions
+        async function initApp() {
+            try {
+                showLoading();
+                const response = await fetch('songs.json');
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid song data format - expected array');
+                }
+                
+                state.songs = data.map((song, index) => ({
+                    id: song.id || `song-${index}`,
+                    title: song.title || 'Untitled Song',
+                    content: song.content || '',
+                    author: song.author || 'Unknown',
+                    searchText: `${song.title} ${song.content}`.toLowerCase()
+                }));
+                
+                setupEventListeners();
+                updateUI();
+                
+            } catch (error) {
+                showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
+                console.error('Loading error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    state.currentTab = tab.dataset.tab;
+                    updateUI();
+                });
+            });
+
+            elements.search.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value.toLowerCase();
+                updateUI();
+            });
+
+            document.querySelector('.close').addEventListener('click', closeModal);
+            elements.modal.addEventListener('click', (e) => {
+                if (e.target === elements.modal) closeModal();
+            });
+
+            elements.bookmarkBtn.addEventListener('click', toggleBookmark);
+        }
+
+        function updateUI() {
+            updateTabIndicator();
+            filterSongs();
+            renderSongList();
+        }
+
+        function updateTabIndicator() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
+            });
+        }
+
+        function filterSongs() {
+            state.filteredSongs = state.songs.filter(song => {
+                const matchesSearch = song.searchText.includes(state.searchQuery);
+                const isBookmarked = state.bookmarks.includes(song.id);
+                return state.currentTab === 'bookmarks' ? (matchesSearch && isBookmarked) : matchesSearch;
+            });
+        }
+
+        function renderSongList() {
+            elements.songList.innerHTML = state.filteredSongs
+                .map(song => `
+                    <div class="song-card" data-id="${song.id}" onclick="showSong('${song.id}')">
+                        <h3>${song.title}</h3>
+                        ${song.author ? `<p class="author">${song.author}</p>` : ''}
+                    </div>
+                `)
+                .join('');
+        }
+
+        function showSong(songId) {
+            const song = state.songs.find(s => s.id === songId);
+            if (!song) return;
+
+            state.currentSongId = songId;
+            elements.modalTitle.textContent = song.title;
+            elements.modalLyrics.innerHTML = song.content
+                .split('\n')
+                .map(line => `<div class="lyric-line">${line}</div>`)
+                .join('');
+            elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
+            elements.modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            elements.modal.style.display = 'none';
+            state.currentSongId = null;
+        }
+
+        function toggleBookmark() {
+            if (!state.currentSongId) return;
+
+            const index = state.bookmarks.indexOf(state.currentSongId);
+            if (index > -1) {
+                state.bookmarks.splice(index, 1);
+            } else {
+                state.bookmarks.push(state.currentSongId);
+            }
+            
+            localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+            updateUI();
+            showSong(state.currentSongId);
+        }
+
+        function showLoading() {
+            elements.loading.style.display = 'block';
+            elements.error.style.display = 'none';
+        }
+
+        function hideLoading() {
+            elements.loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            elements.error.innerHTML = `
+                <h3>பிழை!</h3>
+                <p>${message}</p>
+                <button onclick="location.reload()">மீண்டும் முயற்சிக்கவும்</button>
+            `;
+            elements.error.style.display = 'block';
+        }
+
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
