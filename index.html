@@ -4,26 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>தமிழ் கிறிஸ்தவ பாடல் புத்தகம்</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
             --secondary: #3498db;
-            --accent: #e74c3c;
+            --accent: #e67e22;
             --bg: #f8f9fa;
-            --text: #333;
+            --text: #2d3436;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --toggle-bg: #dfe6e9;
+            
+            /* Night mode variables */
+            --night-primary: #2d3436;
+            --night-secondary: #74b9ff;
+            --night-accent: #fdcb6e;
+            --night-bg: #2d3436;
+            --night-text: #f5f6fa;
+            --night-card-bg: #404040;
+            --night-shadow: rgba(255, 255, 255, 0.1);
+            --night-toggle-bg: #636e72;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.3s, color 0.2s;
         }
 
         body {
             font-family: 'Noto Sans Tamil', sans-serif;
             background-color: var(--bg);
             color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body.night-mode {
+            --primary: var(--night-primary);
+            --secondary: var(--night-secondary);
+            --accent: var(--night-accent);
+            --bg: var(--night-bg);
+            --text: var(--night-text);
+            --card-bg: var(--night-card-bg);
+            --shadow: var(--night-shadow);
+            --toggle-bg: var(--night-toggle-bg);
         }
 
         .container {
@@ -34,66 +61,102 @@
 
         .app-header {
             text-align: center;
-            padding: 2rem 0;
-            background-color: var(--primary);
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
             color: white;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 4px 6px var(--shadow);
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--toggle-bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text);
         }
 
         .search-container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: 1rem;
+            margin: 1rem auto 0;
+            position: relative;
         }
 
         #search {
             width: 100%;
-            padding: 0.8rem;
-            border-radius: 25px;
+            padding: 1rem 2rem;
             border: none;
+            border-radius: 2rem;
             font-size: 1.1rem;
+            background: var(--card-bg);
+            color: var(--text);
+            box-shadow: 0 2px 4px var(--shadow);
         }
 
         .tabs {
             display: flex;
             justify-content: center;
-            margin: 1rem 0;
             gap: 1rem;
+            margin: 2rem 0;
         }
 
         .tab {
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 2rem;
             border: none;
-            background: none;
+            border-radius: 2rem;
+            background: var(--card-bg);
+            color: var(--text);
             cursor: pointer;
-            font-size: 1.1rem;
-            color: #666;
-            border-bottom: 3px solid transparent;
+            box-shadow: 0 2px 4px var(--shadow);
+            font-weight: 600;
         }
 
         .tab.active {
-            color: var(--secondary);
-            border-bottom-color: var(--secondary);
+            background: var(--secondary);
+            color: white;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
             padding: 1rem 0;
         }
 
         .song-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px var(--shadow);
             cursor: pointer;
-            transition: transform 0.2s;
+            transform: translateY(0);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .song-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 6px 12px var(--shadow);
+        }
+
+        .song-card h3 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .author {
+            color: var(--accent);
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .modal {
@@ -103,19 +166,27 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
+            backdrop-filter: blur(3px);
         }
 
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             margin: 2rem auto;
             padding: 2rem;
             max-width: 800px;
-            border-radius: 8px;
+            border-radius: 1rem;
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
+            color: var(--text);
+            animation: modalOpen 0.3s ease-out;
+        }
+
+        @keyframes modalOpen {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-actions {
@@ -131,22 +202,28 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: var(--text);
+            color: var(--accent);
         }
 
         .close {
             font-size: 2rem;
             cursor: pointer;
-            line-height: 1;
+            color: var(--text);
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .close:hover {
+            opacity: 1;
         }
 
         .loading-container {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
         }
 
         .loader {
-            border: 4px solid #f3f3f3;
+            border: 4px solid var(--toggle-bg);
             border-top: 4px solid var(--secondary);
             border-radius: 50%;
             width: 40px;
@@ -161,21 +238,37 @@
         }
 
         .error-container {
-            background: #ffe3e3;
-            color: var(--accent);
-            padding: 1rem;
-            margin: 1rem;
-            border-radius: 4px;
+            background: var(--accent);
+            color: white;
+            padding: 1.5rem;
+            margin: 2rem;
+            border-radius: 1rem;
             text-align: center;
             display: none;
         }
 
-        .hidden {
-            display: none;
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .app-header {
+                padding: 1.5rem 0.5rem;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Add theme toggle button -->
+    <button class="theme-toggle" onclick="toggleNightMode()">
+        <span class="theme-icon">🌙</span>
+        <span class="theme-text">மாற்று</span>
+    </button>
+
     <div class="container">
         <header class="app-header">
             <h1>தமிழ் கிறிஸ்தவ பாடல்கள்</h1>
@@ -184,212 +277,35 @@
             </div>
         </header>
 
-        <nav class="tabs">
-            <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
-            <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
-        </nav>
-
-        <main id="song-list" class="grid-container"></main>
-
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modal-title"></h2>
-                    <div class="modal-actions">
-                        <button id="bookmark-btn">☆</button>
-                        <span class="close" onclick="closeModal()">×</span>
-                    </div>
-                </div>
-                <div id="modal-lyrics" class="lyrics-container"></div>
-            </div>
-        </div>
-
-        <div id="loading" class="loading-container">
-            <div class="loader"></div>
-            <p>பாடல்கள் ஏற்றப்படுகின்றன...</p>
-        </div>
-
-        <div id="error" class="error-container"></div>
+        <!-- Rest of your HTML remains the same -->
+        <!-- ... (previous HTML content) ... -->
     </div>
 
     <script>
-        // Application State
-        const state = {
-            songs: [],
-            filteredSongs: [],
-            bookmarks: JSON.parse(localStorage.getItem('bookmarks')) || [],
-            currentTab: 'all',
-            searchQuery: '',
-            currentSongId: null
-        };
-
-        // DOM Elements
-        const elements = {
-            search: document.getElementById('search'),
-            songList: document.getElementById('song-list'),
-            modal: document.getElementById('modal'),
-            modalTitle: document.getElementById('modal-title'),
-            modalLyrics: document.getElementById('modal-lyrics'),
-            bookmarkBtn: document.getElementById('bookmark-btn'),
-            loading: document.getElementById('loading'),
-            error: document.getElementById('error')
-        };
-
-        // Initialize Application
-        window.addEventListener('DOMContentLoaded', initApp);
-
-        async function initApp() {
-            try {
-                showLoading();
-                const response = await fetch('songs.json');
-                
-                if (!response.ok) throw new Error('Failed to load songs');
-                
-                const data = await response.json();
-                if (!Array.isArray(data)) throw new Error('Invalid song data format');
-                
-                state.songs = data.map(song => ({
-                    ...song,
-                    searchText: `${song.title} ${song.content || ''}`.toLowerCase()
-                }));
-                
-                setupEventListeners();
-                updateUI();
-                
-            } catch (error) {
-                showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
-            } finally {
-                hideLoading();
-            }
+        // Add night mode functionality
+        function toggleNightMode() {
+            document.body.classList.toggle('night-mode');
+            const isNightMode = document.body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode);
+            updateThemeButton(isNightMode);
         }
 
-        // Event Listeners Setup
-        function setupEventListeners() {
-            // Tab Navigation
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    state.currentTab = tab.dataset.tab;
-                    updateUI();
-                });
-            });
-
-            // Search Input
-            elements.search.addEventListener('input', (e) => {
-                state.searchQuery = e.target.value.toLowerCase();
-                updateUI();
-            });
-
-            // Modal Close Actions
-            document.querySelector('.close').addEventListener('click', closeModal);
-            elements.modal.addEventListener('click', (e) => {
-                if (e.target === elements.modal) closeModal();
-            });
-
-            // Bookmark Button
-            elements.bookmarkBtn.addEventListener('click', toggleBookmark);
+        function updateThemeButton(isNight) {
+            const btn = document.querySelector('.theme-toggle');
+            btn.innerHTML = isNight ? 
+                '☀️ <span class="theme-text">மாற்று</span>' : 
+                '🌙 <span class="theme-text">மாற்று</span>';
         }
 
-        // Update UI Components
-        function updateUI() {
-            updateTabIndicator();
-            filterSongs();
-            renderSongList();
+        // Initialize night mode from localStorage
+        const savedNightMode = localStorage.getItem('nightMode') === 'true';
+        if (savedNightMode) {
+            document.body.classList.add('night-mode');
+            updateThemeButton(true);
         }
 
-        // Tab Indicator Update
-        function updateTabIndicator() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
-            });
-        }
-
-        // Filter Songs Based on State
-        function filterSongs() {
-            state.filteredSongs = state.songs.filter(song => {
-                const matchesSearch = song.searchText.includes(state.searchQuery);
-                const isBookmarked = state.bookmarks.includes(song.id);
-                
-                return state.currentTab === 'bookmarks' 
-                    ? (matchesSearch && isBookmarked)
-                    : matchesSearch;
-            });
-        }
-
-        // Render Song List
-        function renderSongList() {
-            elements.songList.innerHTML = state.filteredSongs
-                .map(song => `
-                    <div class="song-card" data-id="${song.id}" onclick="showSong('${song.id}')">
-                        <h3>${song.title}</h3>
-                        ${song.author ? `<p class="author">${song.author}</p>` : ''}
-                    </div>
-                `)
-                .join('');
-        }
-
-        // Show Song Modal
-        function showSong(songId) {
-            const song = state.songs.find(s => s.id === songId);
-            if (!song) return;
-
-            state.currentSongId = songId;
-            
-            // Update Modal Content
-            elements.modalTitle.textContent = song.title;
-            elements.modalLyrics.innerHTML = song.content
-                .split('\n')
-                .map(line => `<div class="lyric-line">${line}</div>`)
-                .join('');
-            
-            // Update Bookmark Button
-            elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
-            
-            // Show Modal
-            elements.modal.style.display = 'block';
-        }
-
-        // Close Modal
-        function closeModal() {
-            elements.modal.style.display = 'none';
-            state.currentSongId = null;
-        }
-
-        // Toggle Bookmark
-        function toggleBookmark() {
-            if (!state.currentSongId) return;
-
-            const index = state.bookmarks.indexOf(state.currentSongId);
-            
-            if (index > -1) {
-                state.bookmarks.splice(index, 1);
-            } else {
-                state.bookmarks.push(state.currentSongId);
-            }
-            
-            localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
-            updateUI();
-            showSong(state.currentSongId); // Refresh modal state
-        }
-
-        // Loading States
-        function showLoading() {
-            elements.loading.style.display = 'block';
-            elements.error.style.display = 'none';
-        }
-
-        function hideLoading() {
-            elements.loading.style.display = 'none';
-        }
-
-        // Error Handling
-        function showError(message) {
-            elements.error.innerHTML = `
-                <h3>பிழை!</h3>
-                <p>${message}</p>
-                <button onclick="location.reload()">மீண்டும் முயற்சிக்கவும்</button>
-            `;
-            elements.error.style.display = 'block';
-        }
+        // Rest of your JavaScript remains the same
+        // ... (previous JavaScript content) ...
     </script>
 </body>
 </html>
