@@ -7,175 +7,187 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <h1>Church Songs</h1>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search songs...">
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>தமிழ் கிறிஸ்தவ பாடல்கள்</h1>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="பாடலை தேடுங்கள்...">
             </div>
         </header>
 
+        <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" id="allSongsTab">All Songs</button>
-            <button class="tab" id="bookmarksTab">Bookmarks</button>
+            <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
+            <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
         </div>
 
-        <main class="song-list" id="songList"></main>
+        <!-- Song List -->
+        <main id="song-list"></main>
 
-        <div class="modal" id="songModal">
+        <!-- Song Modal -->
+        <div class="modal" id="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="songTitle"></h2>
-                    <div class="modal-controls">
-                        <button id="bookmarkButton">☆</button>
-                        <span class="close-btn" onclick="closeModal()">&times;</span>
+                    <h2 id="modal-title"></h2>
+                    <div class="modal-actions">
+                        <button id="bookmark-btn">☆</button>
+                        <span class="close" onclick="closeModal()">×</span>
                     </div>
                 </div>
-                <div class="song-meta" id="songMeta"></div>
-                <div class="song-lyrics" id="songLyrics"></div>
+                <div id="modal-lyrics"></div>
             </div>
         </div>
 
-        <div class="loading" id="loading">
+        <!-- Loading/Error State -->
+        <div id="status">
             <div class="loader"></div>
-            <p>Loading songs...</p>
-            <div class="error-message" id="errorMessage"></div>
+            <p>பாடல்கள் ஏற்றப்படுகின்றன...</p>
         </div>
     </div>
 
-    <button id="themeToggle" class="theme-toggle">
-        <span class="light-icon">🌞</span>
-        <span class="dark-icon">🌙</span>
-    </button>
-
     <script>
-        // Global variables
+        // State Management
         let songs = [];
         let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-        let currentTab = 'all';
-        let currentSong = null;
+        
+        // DOM Elements
+        const elements = {
+            search: document.getElementById('search'),
+            songList: document.getElementById('song-list'),
+            modal: document.getElementById('modal'),
+            status: document.getElementById('status')
+        };
 
-        // Function declarations
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`${tab}Tab`).classList.add('active');
-            
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = [];
-            
-            if (tab === 'all') {
-                filtered = songs.filter(song => 
-                    song.title.toLowerCase().includes(searchTerm) ||
-                    (song.author && song.author.toLowerCase().includes(searchTerm))
-                );
-            } else {
-                filtered = songs.filter(song => 
-                    bookmarks.includes(song.id) && (
-                        song.title.toLowerCase().includes(searchTerm) ||
-                        (song.author && song.author.toLowerCase().includes(searchTerm))
-                    )
-                );
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', initApp);
+
+        async function initApp() {
+            try {
+                // Load Songs
+                const response = await fetch('songs.json');
+                if (!response.ok) throw new Error('Failed to load songs');
+                
+                songs = await response.json();
+                if (!Array.isArray(songs)) throw new Error('Invalid song data');
+                
+                // Initial Render
+                renderSongList(songs);
+                elements.status.style.display = 'none';
+                
+                // Setup Event Listeners
+                setupEventListeners();
+                
+            } catch (error) {
+                showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
             }
+        }
+
+        function setupEventListeners() {
+            // Tab Switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            // Search Functionality
+            elements.search.addEventListener('input', (e) => {
+                filterSongs(e.target.value.toLowerCase());
+            });
+
+            // Bookmarking
+            document.getElementById('bookmark-btn').addEventListener('click', toggleBookmark);
+        }
+
+        function switchTab(tab) {
+            // Update UI
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            
+            // Filter songs
+            const searchTerm = elements.search.value.toLowerCase();
+            filterSongs(searchTerm, tab === 'bookmarks');
+        }
+
+        function filterSongs(term, bookmarksOnly = false) {
+            let filtered = songs;
+            
+            if (bookmarksOnly) {
+                filtered = filtered.filter(song => bookmarks.includes(song.id));
+            }
+            
+            filtered = filtered.filter(song => 
+                song.title.toLowerCase().includes(term) || 
+                (song.content.toLowerCase().includes(term))
+            );
             
             renderSongList(filtered);
         }
 
-        function renderSongList(songsArray) {
-            const songList = document.getElementById('songList');
-            songList.innerHTML = '';
+        function renderSongList(songs) {
+            elements.songList.innerHTML = songs.map(song => `
+                <div class="song-card" data-id="${song.id}" onclick="showSong('${song.id}')">
+                    <h3>${song.title}</h3>
+                    ${song.author ? `<p>${song.author}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function showSong(id) {
+            const song = songs.find(s => s.id === id);
+            if (!song) return;
+
+            // Update Modal
+            document.getElementById('modal-title').textContent = song.title;
+            document.getElementById('modal-lyrics').innerHTML = song.content
+                .split('\n').map(line => `<div class="lyric-line">${line}</div>`).join('');
             
-            songsArray.forEach(song => {
-                const songItem = document.createElement('div');
-                songItem.className = 'song-item';
-                songItem.innerHTML = `
-                    <div class="song-title">${song.title}</div>
-                    <div class="song-author">${song.author || ''}</div>
-                `;
-                songItem.addEventListener('click', () => showSong(song));
-                songList.appendChild(songItem);
-            });
-        }
-
-        function showSong(song) {
-            currentSong = song;
-            const modal = document.getElementById('songModal');
-            document.getElementById('songTitle').textContent = song.title;
-            document.getElementById('songMeta').textContent = song.author ? `By ${song.author}` : '';
-            document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
-            document.getElementById('bookmarkButton').classList.toggle('bookmarked', bookmarks.includes(song.id));
-            modal.style.display = 'block';
-        }
-
-        function formatLyrics(lyrics) {
-            return Object.values(lyrics).flatMap(section => 
-                section.map(line => `
-                    <div class="lyric-line">
-                        ${line.chords ? `<span class="chord">${line.chords}</span>` : ''}
-                        ${line.text}
-                    </div>
-                `)
-            ).join('');
-        }
-
-        function closeModal() {
-            document.getElementById('songModal').style.display = 'none';
-        }
-
-        // Event listeners
-        document.getElementById('allSongsTab').addEventListener('click', () => switchTab('all'));
-        document.getElementById('bookmarksTab').addEventListener('click', () => switchTab('bookmarks'));
-        
-        document.getElementById('bookmarkButton').addEventListener('click', function() {
-            if (!currentSong) return;
+            // Update Bookmark Button
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            bookmarkBtn.classList.toggle('bookmarked', bookmarks.includes(id));
             
-            const index = bookmarks.indexOf(currentSong.id);
+            elements.modal.style.display = 'block';
+        }
+
+        function toggleBookmark() {
+            const songId = document.querySelector('.modal-open')?.dataset?.id;
+            if (!songId) return;
+
+            const index = bookmarks.indexOf(songId);
             if (index > -1) {
                 bookmarks.splice(index, 1);
             } else {
-                bookmarks.push(currentSong.id);
+                bookmarks.push(songId);
             }
+            
             localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            switchTab(currentTab);
-        });
+            filterSongs(elements.search.value.toLowerCase());
+        }
 
-        document.getElementById('searchInput').addEventListener('input', () => switchTab(currentTab));
+        function closeModal() {
+            elements.modal.style.display = 'none';
+        }
 
+        function showError(message) {
+            elements.status.innerHTML = `
+                <div class="error">
+                    <h3>பிழை!</h3>
+                    <p>${message}</p>
+                    <p>தயவு செய்து பின்வருவனவற்றை சரிபார்க்கவும்:</p>
+                    <ul>
+                        <li>songs.json கோப்பு உள்ளது</li>
+                        <li>சரியான JSON வடிவம்</li>
+                        <li>இணைய இணைப்பு</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Close modal when clicking outside
         window.onclick = function(event) {
-            if (event.target === document.getElementById('songModal')) {
+            if (event.target === elements.modal) {
                 closeModal();
             }
         }
-
-        // Initialize app
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('songs.json')
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    if (!Array.isArray(data)) throw new Error('Invalid song data format');
-                    songs = data;
-                    switchTab('all');
-                    document.getElementById('loading').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('loading').innerHTML = `
-                        <div class="error-alert">
-                            <h3>Error Loading Songs</h3>
-                            <p>${error.message}</p>
-                            <p>Please check:</p>
-                            <ul>
-                                <li>songs.json file exists</li>
-                                <li>Valid JSON format</li>
-                                <li>Server is running</li>
-                            </ul>
-                        </div>
-                    `;
-                });
-        });
     </script>
 </body>
 </html>
