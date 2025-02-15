@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="ta"> <!-- Changed to Tamil language -->
+<html lang="ta">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>தமிழ் கிறிஸ்தவ பாடல் புத்தகம்</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c3e50">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="app-header">
             <h1>தமிழ் கிறிஸ்தவ பாடல்கள்</h1>
             <div class="search-container">
@@ -16,16 +18,13 @@
             </div>
         </header>
 
-        <!-- Tabs -->
         <nav class="tabs">
             <button class="tab active" data-tab="all" aria-current="page">அனைத்து பாடல்கள்</button>
             <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
         </nav>
 
-        <!-- Song List -->
         <main id="song-list" class="grid-container"></main>
 
-        <!-- Song Modal -->
         <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
@@ -39,18 +38,15 @@
             </div>
         </div>
 
-        <!-- Status Messages -->
         <div id="status" class="status-message hidden">
             <div class="loader"></div>
             <p>பாடல்கள் ஏற்றப்படுகின்றன...</p>
         </div>
 
-        <!-- Toast Notification -->
         <div id="toast" class="toast hidden"></div>
     </div>
 
     <script>
-        // Enhanced App State Management
         const state = {
             songs: [],
             filteredSongs: [],
@@ -60,7 +56,6 @@
             currentSong: null
         };
 
-        // DOM Elements
         const elements = {
             search: document.getElementById('search'),
             songList: document.getElementById('song-list'),
@@ -69,20 +64,17 @@
             toast: document.getElementById('toast')
         };
 
-        // Event Listeners
+        // Initialize App
         window.addEventListener('DOMContentLoaded', initApp);
-        window.addEventListener('keydown', handleKeyboardNavigation);
 
         async function initApp() {
             try {
                 showLoading();
                 const response = await fetch('songs.json');
                 
-                if (!response.ok) throw new Error('பாடல் தரவைப் பெறுவதில் பிழை');
+                if (!response.ok) throw new Error('Failed to load songs');
                 
                 const data = await response.json();
-                if (!Array.isArray(data)) throw new Error('தவறான பாடல் வடிவம்');
-                
                 state.songs = data.map(song => ({
                     ...song,
                     searchText: `${song.title} ${song.content}`.toLowerCase()
@@ -90,23 +82,55 @@
                 
                 updateUI();
                 hideLoading();
+                setupEventListeners();
                 
             } catch (error) {
                 showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
             }
         }
 
-        function updateUI() {
-            // Apply current filters
-            state.filteredSongs = state.songs.filter(song => {
-                const matchesSearch = song.searchText.includes(state.searchQuery.toLowerCase());
-                const isBookmarked = state.bookmarks.includes(song.id);
-                
-                return state.currentTab === 'bookmarks' ? (matchesSearch && isBookmarked) : matchesSearch;
+        function setupEventListeners() {
+            // Tab Switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
             });
 
-            renderSongList();
+            // Search Functionality
+            elements.search.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value.toLowerCase();
+                updateUI();
+            });
+
+            // Bookmarking
+            document.getElementById('bookmark-btn').addEventListener('click', toggleBookmark);
+        }
+
+        function switchTab(tab) {
+            state.currentTab = tab;
+            updateUI();
+        }
+
+        function updateUI() {
             updateTabIndicator();
+            filterSongs();
+            renderSongList();
+        }
+
+        function updateTabIndicator() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
+            });
+        }
+
+        function filterSongs() {
+            state.filteredSongs = state.songs.filter(song => {
+                const matchesSearch = song.searchText.includes(state.searchQuery);
+                const isBookmarked = state.bookmarks.includes(song.id);
+                
+                return state.currentTab === 'bookmarks' 
+                    ? (matchesSearch && isBookmarked) 
+                    : matchesSearch;
+            });
         }
 
         function renderSongList() {
@@ -119,27 +143,21 @@
                             பாடலைப் பார்க்க
                         </button>
                     </article>
-                `)
-                .join('');
+                `).join('');
         }
 
-        // Enhanced Modal Handling
         function showSong(id) {
             state.currentSong = state.songs.find(s => s.id === id);
             if (!state.currentSong) return;
 
-            // Update Modal Content
             document.getElementById('modal-title').textContent = state.currentSong.title;
             document.getElementById('modal-lyrics').innerHTML = formatLyrics(state.currentSong.content);
             
-            // Update Bookmark State
-            const isBookmarked = state.bookmarks.includes(id);
-            document.getElementById('bookmark-btn').classList.toggle('active', isBookmarked);
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            bookmarkBtn.classList.toggle('active', state.bookmarks.includes(id));
             
-            // Accessibility Updates
-            elements.modal.setAttribute('aria-hidden', 'false');
             elements.modal.style.display = 'block';
-            document.body.classList.add('modal-open');
+            elements.modal.setAttribute('aria-hidden', 'false');
         }
 
         function formatLyrics(content) {
@@ -150,7 +168,6 @@
                 .join('');
         }
 
-        // Enhanced Bookmark Functionality
         function toggleBookmark() {
             if (!state.currentSong) return;
 
@@ -167,25 +184,15 @@
             updateUI();
         }
 
-        // New Features
         function showToast(message) {
             elements.toast.textContent = message;
             elements.toast.classList.remove('hidden');
             setTimeout(() => elements.toast.classList.add('hidden'), 2000);
         }
 
-        function handleKeyboardNavigation(event) {
-            if (event.key === 'Escape' && elements.modal.style.display === 'block') {
-                closeModal();
-            }
-        }
-
-        // Accessibility Improvements
         function closeModal() {
-            elements.modal.setAttribute('aria-hidden', 'true');
             elements.modal.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            document.querySelector('.song-card:focus')?.focus();
+            elements.modal.setAttribute('aria-hidden', 'true');
         }
 
         function showLoading() {
@@ -206,16 +213,11 @@
             `;
         }
 
-        // Initialize Service Worker for PWA
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
             });
         }
     </script>
