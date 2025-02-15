@@ -527,18 +527,21 @@
         }
 
         function showSong(songId) {
-            const song = state.songs.find(s => s.id === songId);
-            if (!song) return;
+    const song = state.songs.find(s => s.id === songId);
+    if (!song) return;
 
-            state.currentSongId = songId;
-            elements.modalTitle.textContent = song.title;
-            elements.modalLyrics.innerHTML = song.content
-                .split('\n')
-                .map(line => `<div class="lyric-line">${line}</div>`)
-                .join('');
-            elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
-            elements.modal.style.display = 'block';
-        }
+    state.currentSongId = songId;
+    elements.modalTitle.textContent = song.title;
+
+    // Use template literals to preserve line breaks
+    elements.modalLyrics.innerHTML = song.content
+        .split('\n') // Split by line breaks
+        .map(line => line.trim() === '' ? '<br>' : `<div class="lyric-line">${line}</div>`) // Add <br> for empty lines
+        .join('');
+
+    elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
+    elements.modal.style.display = 'block';
+}
 
         function closeModal() {
             elements.modal.style.display = 'none';
