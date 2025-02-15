@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tamil Church Songbook</title>
-    <link rel="manifest" href="manifest.json">
-    `<link rel="stylesheet" href="styles.css">`
+    <title>Church Songbook</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
             <h1>Church Songs</h1>
             <div class="search-box">
@@ -17,16 +15,13 @@
             </div>
         </header>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" id="allSongsTab">All Songs</button>
             <button class="tab" id="bookmarksTab">Bookmarks</button>
         </div>
 
-        <!-- Song List -->
         <main class="song-list" id="songList"></main>
 
-        <!-- Song Detail Modal -->
         <div class="modal" id="songModal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -41,63 +36,77 @@
             </div>
         </div>
 
-        <!-- Loading Indicator -->
         <div class="loading" id="loading">Loading songs...</div>
     </div>
 
-    <!-- Theme Toggle -->
     <button id="themeToggle" class="theme-toggle">
         <span class="light-icon">🌞</span>
         <span class="dark-icon">🌙</span>
     </button>
 
     <script>
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        let currentTab = 'all';
-        let currentSong = null;
         let songs = [];
         let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+        let currentTab = 'all';
+        let currentSong = null;
 
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('songs.json')
-                .then(response => response.json())
-                .then(data => {
-                    songs = data;
-                    renderSongList(songs);
-                    document.getElementById('loading').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('loading').textContent = 'Failed to load songs';
-                });
-        });
+        // Load songs
+        fetch('songs.json')
+            .then(response => response.json())
+            .then(data => {
+                songs = data;
+                switchTab('all');
+                document.getElementById('loading').style.display = 'none';
+            })
+            .catch(console.error);
 
-        // Tabs
+        // Tab functionality
         document.getElementById('allSongsTab').addEventListener('click', () => switchTab('all'));
         document.getElementById('bookmarksTab').addEventListener('click', () => switchTab('bookmarks'));
 
         // Bookmark functionality
         document.getElementById('bookmarkButton').addEventListener('click', function() {
             if (!currentSong) return;
+            
             const index = bookmarks.indexOf(currentSong.id);
             if (index > -1) {
                 bookmarks.splice(index, 1);
-                this.classList.remove('bookmarked');
             } else {
                 bookmarks.push(currentSong.id);
-                this.classList.add('bookmarked');
             }
             localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            if (currentTab === 'bookmarks') switchTab('bookmarks');
+            switchTab(currentTab); // Refresh current tab
         });
 
-        // Core functions
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = [];
+            
+            if (tab === 'all') {
+                filtered = songs.filter(song => 
+                    song.title.toLowerCase().includes(searchTerm) ||
+                    (song.author && song.author.toLowerCase().includes(searchTerm))
+                );
+            } else {
+                filtered = songs.filter(song => 
+                    bookmarks.includes(song.id) && (
+                        song.title.toLowerCase().includes(searchTerm) ||
+                        (song.author && song.author.toLowerCase().includes(searchTerm))
+                    )
+                );
+            }
+            
+            renderSongList(filtered);
+        }
+
         function renderSongList(songsArray) {
             const songList = document.getElementById('songList');
             songList.innerHTML = '';
+            
             songsArray.forEach(song => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
@@ -114,55 +123,35 @@
             currentSong = song;
             const modal = document.getElementById('songModal');
             document.getElementById('songTitle').textContent = song.title;
-            document.getElementById('songMeta').textContent = `By ${song.author}`;
+            document.getElementById('songMeta').textContent = song.author ? `By ${song.author}` : '';
             document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
             document.getElementById('bookmarkButton').classList.toggle('bookmarked', bookmarks.includes(song.id));
             modal.style.display = 'block';
         }
 
-        function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`${tab}Tab`).classList.add('active');
-  
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  
-  const filtered = tab === 'all' 
-    ? songs.filter(s => 
-        s.title.toLowerCase().includes(searchTerm) ||
-        (s.author && s.author.toLowerCase().includes(searchTerm))
-      )
-    : songs.filter(s => 
-        bookmarks.includes(s.id) && (
-          s.title.toLowerCase().includes(searchTerm) ||
-          (s.author && s.author.toLowerCase().includes(searchTerm))
-        )
-      );
-  
-  renderSongList(filtered);
-}
-        }
-
         function formatLyrics(lyrics) {
             return Object.values(lyrics).flatMap(section => 
-                section.map(line => `<div>${line.chords ? `<span>${line.chords}</span>` : ''}${line.text}</div>`)
+                section.map(line => `
+                    <div class="lyric-line">
+                        ${line.chords ? `<span class="chord">${line.chords}</span>` : ''}
+                        ${line.text}
+                    </div>
+                `)
             ).join('');
         }
 
-        // Close modal
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', () => switchTab(currentTab));
+
         function closeModal() {
             document.getElementById('songModal').style.display = 'none';
         }
 
         window.onclick = function(event) {
-            if (event.target === document.getElementById('songModal')) closeModal();
+            if (event.target === document.getElementById('songModal')) {
+                closeModal();
+            }
         }
-
-        // Theme toggle
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark-theme' : '');
-        });
     </script>
 </body>
 </html>
