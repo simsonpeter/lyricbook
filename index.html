@@ -3,155 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Church Songbook</title>
+    <title>Tamil Church Songbook</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
-        <header class="app-header">
-            <h1>Church Songs</h1>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search songs...">
-            </div>
-        </header>
-
-        <div class="tabs">
-            <button class="tab active" id="allSongsTab">All Songs</button>
-            <button class="tab" id="bookmarksTab">Bookmarks</button>
+        <!-- Keep existing header and content -->
+        
+        <!-- Updated Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="loader"></div>
+            <p>Loading songs...</p>
+            <p class="error-message" id="errorMessage"></p>
         </div>
-
-        <main class="song-list" id="songList"></main>
-
-        <div class="modal" id="songModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="songTitle"></h2>
-                    <div class="modal-controls">
-                        <button id="bookmarkButton">☆</button>
-                        <span class="close-btn" onclick="closeModal()">&times;</span>
-                    </div>
-                </div>
-                <div class="song-meta" id="songMeta"></div>
-                <div class="song-lyrics" id="songLyrics"></div>
-            </div>
-        </div>
-
-        <div class="loading" id="loading">Loading songs...</div>
     </div>
 
-    <button id="themeToggle" class="theme-toggle">
-        <span class="light-icon">🌞</span>
-        <span class="dark-icon">🌙</span>
-    </button>
-
     <script>
-        let songs = [];
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-        let currentTab = 'all';
-        let currentSong = null;
-
-        // Load songs
-        fetch('songs.json')
-            .then(response => response.json())
-            .then(data => {
+        // Enhanced Loading Function
+        async function loadSongs() {
+            try {
+                const response = await fetch('songs.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid song data format');
+                }
+                
                 songs = data;
                 switchTab('all');
                 document.getElementById('loading').style.display = 'none';
-            })
-            .catch(console.error);
-
-        // Tab functionality
-        document.getElementById('allSongsTab').addEventListener('click', () => switchTab('all'));
-        document.getElementById('bookmarksTab').addEventListener('click', () => switchTab('bookmarks'));
-
-        // Bookmark functionality
-        document.getElementById('bookmarkButton').addEventListener('click', function() {
-            if (!currentSong) return;
-            
-            const index = bookmarks.indexOf(currentSong.id);
-            if (index > -1) {
-                bookmarks.splice(index, 1);
-            } else {
-                bookmarks.push(currentSong.id);
-            }
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            switchTab(currentTab); // Refresh current tab
-        });
-
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`${tab}Tab`).classList.add('active');
-            
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = [];
-            
-            if (tab === 'all') {
-                filtered = songs.filter(song => 
-                    song.title.toLowerCase().includes(searchTerm) ||
-                    (song.author && song.author.toLowerCase().includes(searchTerm))
-                );
-            } else {
-                filtered = songs.filter(song => 
-                    bookmarks.includes(song.id) && (
-                        song.title.toLowerCase().includes(searchTerm) ||
-                        (song.author && song.author.toLowerCase().includes(searchTerm))
-                    )
-                );
-            }
-            
-            renderSongList(filtered);
-        }
-
-        function renderSongList(songsArray) {
-            const songList = document.getElementById('songList');
-            songList.innerHTML = '';
-            
-            songsArray.forEach(song => {
-                const songItem = document.createElement('div');
-                songItem.className = 'song-item';
-                songItem.innerHTML = `
-                    <div class="song-title">${song.title}</div>
-                    <div class="song-author">${song.author}</div>
-                `;
-                songItem.addEventListener('click', () => showSong(song));
-                songList.appendChild(songItem);
-            });
-        }
-
-        function showSong(song) {
-            currentSong = song;
-            const modal = document.getElementById('songModal');
-            document.getElementById('songTitle').textContent = song.title;
-            document.getElementById('songMeta').textContent = song.author ? `By ${song.author}` : '';
-            document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
-            document.getElementById('bookmarkButton').classList.toggle('bookmarked', bookmarks.includes(song.id));
-            modal.style.display = 'block';
-        }
-
-        function formatLyrics(lyrics) {
-            return Object.values(lyrics).flatMap(section => 
-                section.map(line => `
-                    <div class="lyric-line">
-                        ${line.chords ? `<span class="chord">${line.chords}</span>` : ''}
-                        ${line.text}
+                
+            } catch (error) {
+                console.error('Loading failed:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="error-alert">
+                        <h3>Error Loading Songs</h3>
+                        <p>${error.message}</p>
+                        <p>Please check:</p>
+                        <ul>
+                            <li>songs.json file exists</li>
+                            <li>Valid JSON format</li>
+                            <li>Server is running</li>
+                        </ul>
                     </div>
-                `)
-            ).join('');
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', () => switchTab(currentTab));
-
-        function closeModal() {
-            document.getElementById('songModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target === document.getElementById('songModal')) {
-                closeModal();
+                `;
             }
         }
+
+        // Initialize with error handling
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSongs().catch(error => {
+                console.error('Initialization error:', error);
+            });
+        });
     </script>
 </body>
 </html>
