@@ -31,9 +31,11 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="songTitle"></h2>
-                    <button id="bookmarkButton">☆</button>
+                    <div class="modal-controls">
+                        <button id="bookmarkButton">☆</button>
+                        <span class="close-btn" onclick="closeModal()">&times;</span>
+                    </div>
                 </div>
-                <span class="close-btn" onclick="closeModal()">&times;</span>
                 <div class="song-meta" id="songMeta"></div>
                 <div class="song-lyrics" id="songLyrics"></div>
             </div>
@@ -50,7 +52,7 @@
     </button>
 
     <script>
-        // Theme Toggle
+          // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
         const savedTheme = localStorage.getItem('theme');
