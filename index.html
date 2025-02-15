@@ -121,13 +121,26 @@
         }
 
         function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`${tab}Tab`).classList.add('active');
-            const filtered = tab === 'all' 
-                ? songs.filter(s => s.title.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase()))
-                : songs.filter(s => bookmarks.includes(s.id));
-            renderSongList(filtered);
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`${tab}Tab`).classList.add('active');
+  
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  
+  const filtered = tab === 'all' 
+    ? songs.filter(s => 
+        s.title.toLowerCase().includes(searchTerm) ||
+        (s.author && s.author.toLowerCase().includes(searchTerm))
+      )
+    : songs.filter(s => 
+        bookmarks.includes(s.id) && (
+          s.title.toLowerCase().includes(searchTerm) ||
+          (s.author && s.author.toLowerCase().includes(searchTerm))
+        )
+      );
+  
+  renderSongList(filtered);
+}
         }
 
         function formatLyrics(lyrics) {
