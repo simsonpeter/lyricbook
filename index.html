@@ -23,18 +23,18 @@
 
         <main id="song-list" class="grid-container"></main>
 
-        <div class="modal" id="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modal-title"></h2>
-                    <div class="modal-actions">
-                        <button id="bookmark-btn">☆</button>
-                        <span class="close" onclick="closeModal()">×</span>
-                    </div>
-                </div>
-                <div id="modal-lyrics" class="lyrics-container"></div>
+       <div class="modal" id="modal">
+    <div class="modal-content" data-song-id="">
+        <div class="modal-header">
+            <h2 id="modal-title"></h2>
+            <div class="modal-actions">
+                <button id="bookmark-btn" onclick="toggleBookmark()">☆</button>
+                <button class="close" onclick="closeModal()">×</button>
             </div>
         </div>
+        <div id="modal-lyrics" class="lyrics-container"></div>
+    </div>
+</div>
 
         <div id="loading" class="loading-container">
             <div class="loader"></div>
