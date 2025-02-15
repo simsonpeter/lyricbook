@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NJC Songbook</title>
+    <title>Church Songbook</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <h1>NJC Song Book</h1>
+            <h1>Church Songs</h1>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search songs...">
             </div>
         </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" id="allSongsTab">All Songs</button>
+            <button class="tab" id="bookmarksTab">Bookmarks</button>
+        </div>
 
         <!-- Song List -->
         <main class="song-list" id="songList"></main>
@@ -22,8 +29,11 @@
         <!-- Song Detail Modal -->
         <div class="modal" id="songModal">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="songTitle"></h2>
+                    <button id="bookmarkButton">☆</button>
+                </div>
                 <span class="close-btn" onclick="closeModal()">&times;</span>
-                <h2 id="songTitle"></h2>
                 <div class="song-meta" id="songMeta"></div>
                 <div class="song-lyrics" id="songLyrics"></div>
             </div>
@@ -43,24 +53,26 @@
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
-
-        // Check saved theme
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-        }
+        if (savedTheme) body.classList.add(savedTheme);
 
-        // Toggle Theme
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-theme');
-            const isDark = body.classList.contains('dark-theme');
-            localStorage.setItem('theme', isDark ? 'dark-theme' : '');
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark-theme' : '');
         });
 
-        // Song Data
+        // App Data
         let songs = [];
+        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+        let currentTab = 'all';
+        let currentSong = null;
 
-        // Load songs
+        // DOM Elements
+        const songList = document.getElementById('songList');
+        const searchInput = document.getElementById('searchInput');
+        const bookmarkButton = document.getElementById('bookmarkButton');
+
+        // Initialize
         fetch('songs.json')
             .then(response => response.json())
             .then(data => {
@@ -68,16 +80,31 @@
                 renderSongList(songs);
                 document.getElementById('loading').style.display = 'none';
             })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('loading').textContent = 'Error loading songs.';
-            });
+            .catch(console.error);
 
-        // Render song list
-        function renderSongList(songsArray) {
-            const songList = document.getElementById('songList');
-            songList.innerHTML = '';
+        // Tabs
+        document.getElementById('allSongsTab').addEventListener('click', () => switchTab('all'));
+        document.getElementById('bookmarksTab').addEventListener('click', () => switchTab('bookmarks'));
+
+        // Bookmark functionality
+        bookmarkButton.addEventListener('click', function() {
+            if (!currentSong) return;
             
+            const index = bookmarks.indexOf(currentSong.id);
+            if (index > -1) {
+                bookmarks.splice(index, 1);
+                this.parentElement.classList.remove('bookmarked');
+            } else {
+                bookmarks.push(currentSong.id);
+                this.parentElement.classList.add('bookmarked');
+            }
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            if (currentTab === 'bookmarks') switchTab('bookmarks');
+        });
+
+        // Render songs
+        function renderSongList(songsArray) {
+            songList.innerHTML = '';
             songsArray.forEach(song => {
                 const songItem = document.createElement('div');
                 songItem.className = 'song-item';
@@ -90,24 +117,31 @@
             });
         }
 
-        // Show song modal
         function showSong(song) {
-  const modal = document.getElementById('songModal');
-  document.getElementById('songTitle').textContent = song.title;
-  document.getElementById('songMeta').textContent = `By ${song.author}`;
-  document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
-  modal.style.display = 'block';
-  
-  // Scroll to top when modal opens
-  modal.scrollTo(0, 0);
+            currentSong = song;
+            const modal = document.getElementById('songModal');
+            document.getElementById('songTitle').textContent = song.title;
+            document.getElementById('songMeta').textContent = `By ${song.author}`;
+            document.getElementById('songLyrics').innerHTML = formatLyrics(song.lyrics);
+            bookmarkButton.parentElement.classList.toggle('bookmarked', bookmarks.includes(song.id));
+            modal.style.display = 'block';
         }
 
-        // Close modal
-        function closeModal() {
-            document.getElementById('songModal').style.display = 'none';
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            
+            const filtered = tab === 'all' ? 
+                songs.filter(s => 
+                    s.title.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                    s.author.toLowerCase().includes(searchInput.value.toLowerCase())
+                ) : 
+                songs.filter(s => bookmarks.includes(s.id));
+            
+            renderSongList(filtered);
         }
 
-        // Format lyrics
         function formatLyrics(lyrics) {
             return Object.values(lyrics).flatMap(section => 
                 section.map(line => 
@@ -119,23 +153,17 @@
             ).join('');
         }
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filtered = songs.filter(song => 
-                song.title.toLowerCase().includes(searchTerm) ||
-                (song.author && song.author.toLowerCase().includes(searchTerm)) ||
-                JSON.stringify(song.lyrics).toLowerCase().includes(searchTerm)
-            );
-            renderSongList(filtered);
-        });
+        // Search
+        searchInput.addEventListener('input', () => switchTab(currentTab));
 
-        // Close modal when clicking outside
+        // Close modal
+        function closeModal() {
+            document.getElementById('songModal').style.display = 'none';
+        }
+
         window.onclick = function(event) {
             const modal = document.getElementById('songModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            if (event.target === modal) closeModal();
         }
     </script>
 </body>
