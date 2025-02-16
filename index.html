@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>புதிய எருசலேம் சபை பாடல் புத்தகம்</title>
+    <title>தமிழ் கிறிஸ்தவ பாடல் புத்தகம்</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS Styles */
         :root {
             --primary: #2c3e50;
             --secondary: #3498db;
@@ -89,6 +90,28 @@
             box-shadow: 0 4px 6px var(--shadow);
         }
 
+        .verse-of-the-day {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px var(--shadow);
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .verse-of-the-day .verse-text {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .verse-of-the-day .verse-ref {
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
         .search-container {
             max-width: 600px;
             margin: 1rem auto 0;
@@ -128,53 +151,11 @@
             color: white;
         }
 
-        .alphabet-index {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .index-letter {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background 0.3s ease;
-        }
-
-        .index-letter:hover {
-            background: var(--accent);
-        }
-
-        .song-list-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: 0 2px 4px var(--shadow);
-        }
-
-        .song-section {
-            margin: 2rem 0;
-        }
-
-        .section-header {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 0.5rem;
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0;
         }
 
         .song-card {
@@ -190,6 +171,78 @@
         .song-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px var(--shadow);
+        }
+
+        .contact-us {
+            background: var(--card-bg);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px var(--shadow);
+            text-align: center;
+        }
+
+        .contact-us h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .contact-us p {
+            margin-bottom: 2rem;
+            color: var(--text);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        #contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--toggle-bg);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+
+        .submit-btn {
+            background: var(--secondary);
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent);
         }
 
         .modal {
@@ -272,10 +325,11 @@
         }
 
         .lyrics-container {
-    white-space: pre-line; /* This ensures line breaks are rendered */
-    line-height: 1.8;
-    font-size: 1.1rem;
-}
+            white-space: pre-line;
+            padding: 1rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
 
         .loading-container {
             text-align: center;
@@ -311,34 +365,47 @@
 <body>
     <div class="container">
         <header class="app-header">
-            <h1>புதிய எருசலேம் சபை பாடல்கள்</h1>
+            <h1>தமிழ் கிறிஸ்தவ பாடல்கள்</h1>
             <div class="search-container">
                 <input type="text" id="search" placeholder="பாடலை தேடுங்கள்...">
             </div>
         </header>
 
+        <!-- Verse of the Day Section -->
+        <div class="verse-of-the-day">
+            <div class="verse-text" id="verse-text">"நான் உங்களை விட்டுப் பிரியேன், உங்களைக் கைவிடேன் என்று கர்த்தர் உரைக்கிறார்"</div>
+            <div class="verse-ref" id="verse-ref">- எபிரெயர் 13:5</div>
+        </div>
+
         <nav class="tabs">
             <button class="tab active" data-tab="all">அனைத்து பாடல்கள்</button>
             <button class="tab" data-tab="bookmarks">புத்தககுறிகள்</button>
-            <button class="tab" data-tab="about">எங்களைப் பற்றி</button>
+            <button class="tab" data-tab="contact">தொடர்புக்கு</button>
         </nav>
 
-        <!-- Alphabet Index -->
-        <div id="alphabet-index" class="alphabet-index"></div>
+        <main id="song-list" class="grid-container"></main>
 
-        <!-- Song List Container -->
-        <div id="song-list-container" class="song-list-container">
-            <main id="song-list" class="grid-container"></main>
+        <!-- Contact Us Section -->
+        <div id="contact-us" class="contact-us" style="display: none;">
+            <h2>தொடர்புக்கு</h2>
+            <p>உங்கள் கருத்துகள் மற்றும் பரிந்துரைகளைப் பகிர்ந்து கொள்ளுங்கள். எங்களைத் தொடர்பு கொள்ள:</p>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="name">பெயர்:</label>
+                    <input type="text" id="name" name="name" placeholder="உங்கள் பெயரை உள்ளிடவும்" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">மின்னஞ்சல்:</label>
+                    <input type="email" id="email" name="email" placeholder="உங்கள் மின்னஞ்சலை உள்ளிடவும்" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">செய்தி:</label>
+                    <textarea id="message" name="message" placeholder="உங்கள் செய்தியை உள்ளிடவும்" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">அனுப்பு</button>
+            </form>
         </div>
 
-        <!-- About Us Section -->
-        <div id="about-us" class="about-us" style="display: none;">
-            <h2>எங்களைப் பற்றி</h2>
-            <p></p>
-            <p>இந்த பாடல் புத்தகம் "புதிய எருசலேம் சபை", பெல்ஜியம் கிளையினால் உருவாக்கப்பட்டது. சபையில் பாடப்படும் மற்றும் புதிய பாடல்களும் பதிவேற்றம் செய்யப்படும். தேவனை துதிப்போம். நன்மைகளை பெறுவோம்,</p>
-        </div>
-
-        <!-- Modal -->
         <div id="modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -378,165 +445,42 @@
         const elements = {
             search: document.getElementById('search'),
             songList: document.getElementById('song-list'),
-            songListContainer: document.getElementById('song-list-container'),
             modal: document.getElementById('modal'),
             modalTitle: document.getElementById('modal-title'),
             modalLyrics: document.getElementById('modal-lyrics'),
             bookmarkBtn: document.getElementById('bookmark-btn'),
             loading: document.getElementById('loading'),
             error: document.getElementById('error'),
-            alphabetIndex: document.getElementById('alphabet-index'),
-            aboutUs: document.getElementById('about-us')
+            verseText: document.getElementById('verse-text'),
+            verseRef: document.getElementById('verse-ref'),
+            contactUs: document.getElementById('contact-us')
         };
 
-        // Function to group songs by the first letter of their title
-        function groupSongsByAlphabet(songs) {
-            const groupedSongs = {};
-            songs.forEach(song => {
-                const firstLetter = song.title.charAt(0).toUpperCase();
-                if (!groupedSongs[firstLetter]) {
-                    groupedSongs[firstLetter] = [];
-                }
-                groupedSongs[firstLetter].push(song);
-            });
-            return groupedSongs;
-        }
-
-        // Function to render the alphabetical index
-        function renderAlphabetIndex(groupedSongs) {
-            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            elements.alphabetIndex.innerHTML = '';
-
-            alphabet.split('').forEach(letter => {
-                if (groupedSongs[letter]) {
-                    const letterButton = document.createElement('button');
-                    letterButton.textContent = letter;
-                    letterButton.className = 'index-letter';
-                    letterButton.addEventListener('click', () => scrollToLetter(letter));
-                    elements.alphabetIndex.appendChild(letterButton);
-                }
-            });
-        }
-
-        // Function to scroll to the selected letter
-        function scrollToLetter(letter) {
-            const targetSection = document.getElementById(`letter-${letter}`);
-            if (targetSection) {
-                targetSection.scrollIntoView({ behavior: 'smooth' });
+        // Verse of the Day Data
+        const verses = [
+            {
+                text: "நான் உங்களை விட்டுப் பிரியேன், உங்களைக் கைவிடேன் என்று கர்த்தர் உரைக்கிறார்",
+                ref: "எபிரெயர் 13:5"
+            },
+            {
+                text: "கர்த்தரை நோக்கி உங்கள் வழிகளை ஒப்புக்கொள்ளுங்கள்; அவர் உங்களை நடத்துவார்",
+                ref: "சங்கீதம் 37:5"
+            },
+            {
+                text: "எல்லா மனிதருக்கும் இனியவனாயிருக்க முயலுங்கள்",
+                ref: "ரோமர் 12:18"
             }
+        ];
+
+        // Set Verse of the Day
+        function setVerseOfTheDay() {
+            const today = new Date().getDate();
+            const verse = verses[today % verses.length];
+            elements.verseText.textContent = `"${verse.text}"`;
+            elements.verseRef.textContent = `- ${verse.ref}`;
         }
 
-        // Function to render the song list with alphabetical grouping
-        function renderSongList(groupedSongs) {
-            elements.songList.innerHTML = '';
-
-            Object.keys(groupedSongs).sort().forEach(letter => {
-                const section = document.createElement('div');
-                section.id = `letter-${letter}`;
-                section.className = 'song-section';
-
-                const sectionHeader = document.createElement('h2');
-                sectionHeader.textContent = letter;
-                sectionHeader.className = 'section-header';
-                section.appendChild(sectionHeader);
-
-                groupedSongs[letter].forEach(song => {
-                    const songCard = document.createElement('div');
-                    songCard.className = 'song-card';
-                    songCard.setAttribute('data-id', song.id);
-                    songCard.onclick = () => showSong(song.id);
-
-                    const songTitle = document.createElement('h3');
-                    songTitle.textContent = song.title;
-                    songCard.appendChild(songTitle);
-
-                    if (song.author) {
-                        const songAuthor = document.createElement('p');
-                        songAuthor.className = 'author';
-                        songAuthor.textContent = song.author;
-                        songCard.appendChild(songAuthor);
-                    }
-
-                    section.appendChild(songCard);
-                });
-
-                elements.songList.appendChild(section);
-            });
-        }
-
-        // Function to show a song in the modal
-        function showSong(songId) {
-    const song = state.songs.find(s => s.id === songId);
-    if (!song) return;
-
-    state.currentSongId = songId;
-    elements.modalTitle.textContent = song.title;
-
-    // Use template literals to preserve line breaks
-    elements.modalLyrics.innerHTML = song.content
-        .split('\n') // Split by line breaks
-        .map(line => line.trim() === '' ? '<br>' : `<div class="lyric-line">${line}</div>`) // Add <br> for empty lines
-        .join('');
-
-    elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
-    elements.modal.style.display = 'block';
-             }
-
-        // Function to close the modal
-        function closeModal() {
-            elements.modal.style.display = 'none';
-            state.currentSongId = null;
-        }
-
-        // Function to toggle bookmark
-        function toggleBookmark() {
-            if (!state.currentSongId) return;
-
-            const index = state.bookmarks.indexOf(state.currentSongId);
-            if (index > -1) {
-                state.bookmarks.splice(index, 1);
-            } else {
-                state.bookmarks.push(state.currentSongId);
-            }
-
-            localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
-            updateUI();
-            showSong(state.currentSongId);
-        }
-
-        // Function to update the UI
-        function updateUI() {
-            updateTabIndicator();
-            filterSongs();
-            const groupedSongs = groupSongsByAlphabet(state.filteredSongs);
-            renderAlphabetIndex(groupedSongs);
-            renderSongList(groupedSongs);
-            toggleAboutUsSection();
-        }
-
-        // Function to update the tab indicator
-        function updateTabIndicator() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
-            });
-        }
-
-        // Function to filter songs based on search query and tab
-        function filterSongs() {
-            state.filteredSongs = state.songs.filter(song => {
-                const matchesSearch = song.title.toLowerCase().includes(state.searchQuery.toLowerCase());
-                const isBookmarked = state.bookmarks.includes(song.id);
-                return state.currentTab === 'bookmarks' ? (matchesSearch && isBookmarked) : matchesSearch;
-            });
-        }
-
-        // Function to toggle the About Us section
-        function toggleAboutUsSection() {
-            elements.aboutUs.style.display = state.currentTab === 'about' ? 'block' : 'none';
-            elements.songListContainer.style.display = state.currentTab === 'about' ? 'none' : 'block';
-        }
-
-        // Function to toggle night mode
+        // Night Mode Functions
         function toggleNightMode() {
             document.body.classList.toggle('night-mode');
             const isNightMode = document.body.classList.contains('night-mode');
@@ -544,7 +488,6 @@
             updateThemeButton(isNightMode);
         }
 
-        // Function to update the theme toggle button
         function updateThemeButton(isNight) {
             const btn = document.querySelector('.theme-toggle');
             btn.innerHTML = isNight ? 
@@ -552,39 +495,22 @@
                 '🌙 <span class="theme-text">மாற்று</span>';
         }
 
-        // Function to show loading state
-        function showLoading() {
-            elements.loading.style.display = 'block';
-            elements.error.style.display = 'none';
-        }
-
-        // Function to hide loading state
-        function hideLoading() {
-            elements.loading.style.display = 'none';
-        }
-
-        // Function to show error message
-        function showError(message) {
-            elements.error.innerHTML = `
-                <h3>பிழை!</h3>
-                <p>${message}</p>
-                <button onclick="location.reload()">மீண்டும் முயற்சிக்கவும்</button>
-            `;
-            elements.error.style.display = 'block';
-        }
-
-        // Initialize the app
+        // Core App Functions
         async function initApp() {
             try {
                 showLoading();
                 const response = await fetch('songs.json');
+                
                 if (!response.ok) {
                     throw new Error(`Failed to load songs: ${response.status}`);
                 }
+                
                 const data = await response.json();
+                
                 if (!Array.isArray(data)) {
                     throw new Error('Invalid song data format');
                 }
+                
                 state.songs = data.map((song, index) => ({
                     id: song.id || `song-${index}`,
                     title: song.title || 'Untitled Song',
@@ -592,8 +518,11 @@
                     author: song.author || 'Unknown',
                     searchText: `${song.title} ${song.content}`.toLowerCase()
                 }));
+                
                 setupEventListeners();
                 updateUI();
+                setVerseOfTheDay();
+                
             } catch (error) {
                 showError(`பாடல்களை ஏற்ற முடியவில்லை: ${error.message}`);
                 console.error('Loading error:', error);
@@ -609,7 +538,6 @@
             }
         }
 
-        // Set up event listeners
         function setupEventListeners() {
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -629,6 +557,102 @@
             });
 
             elements.bookmarkBtn.addEventListener('click', toggleBookmark);
+
+            // Contact form submission
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('உங்கள் செய்தி அனுப்பப்பட்டது! நன்றி!');
+                e.target.reset();
+            });
+        }
+
+        function updateUI() {
+            updateTabIndicator();
+            filterSongs();
+            renderSongList();
+            toggleContactUsSection();
+        }
+
+        function updateTabIndicator() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
+            });
+        }
+
+        function filterSongs() {
+            state.filteredSongs = state.songs.filter(song => {
+                const matchesSearch = song.searchText.includes(state.searchQuery);
+                const isBookmarked = state.bookmarks.includes(song.id);
+                return state.currentTab === 'bookmarks' ? (matchesSearch && isBookmarked) : matchesSearch;
+            });
+        }
+
+        function renderSongList() {
+            elements.songList.innerHTML = state.filteredSongs
+                .map(song => `
+                    <div class="song-card" data-id="${song.id}" onclick="showSong('${song.id}')">
+                        <h3>${song.title}</h3>
+                        ${song.author ? `<p class="author">${song.author}</p>` : ''}
+                    </div>
+                `)
+                .join('');
+        }
+
+        function toggleContactUsSection() {
+            elements.contactUs.style.display = state.currentTab === 'contact' ? 'block' : 'none';
+            elements.songList.style.display = state.currentTab === 'contact' ? 'none' : 'grid';
+        }
+
+        function showSong(songId) {
+            const song = state.songs.find(s => s.id === songId);
+            if (!song) return;
+
+            state.currentSongId = songId;
+            elements.modalTitle.textContent = song.title;
+            elements.modalLyrics.innerHTML = song.content
+                .split('\n')
+                .map(line => line.trim() === '' ? '<br>' : `<div class="lyric-line">${line}</div>`)
+                .join('');
+            elements.bookmarkBtn.textContent = state.bookmarks.includes(songId) ? '★' : '☆';
+            elements.modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            elements.modal.style.display = 'none';
+            state.currentSongId = null;
+        }
+
+        function toggleBookmark() {
+            if (!state.currentSongId) return;
+
+            const index = state.bookmarks.indexOf(state.currentSongId);
+            if (index > -1) {
+                state.bookmarks.splice(index, 1);
+            } else {
+                state.bookmarks.push(state.currentSongId);
+            }
+            
+            localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+            updateUI();
+            showSong(state.currentSongId);
+        }
+
+        function showLoading() {
+            elements.loading.style.display = 'block';
+            elements.error.style.display = 'none';
+        }
+
+        function hideLoading() {
+            elements.loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            elements.error.innerHTML = `
+                <h3>பிழை!</h3>
+                <p>${message}</p>
+                <button onclick="location.reload()">மீண்டும் முயற்சிக்கவும்</button>
+            `;
+            elements.error.style.display = 'block';
         }
 
         // Initialize the app
