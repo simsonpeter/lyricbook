@@ -306,6 +306,73 @@
             text-align: center;
             display: none;
         }
+        /* About Us Section */
+.about-us {
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px var(--shadow);
+    margin: 2rem 0;
+}
+
+.about-us h2 {
+    text-align: center;
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--secondary);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.about-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+}
+
+.about-text {
+    max-width: 800px;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.about-text p {
+    margin-bottom: 1rem;
+}
+
+.about-image {
+    max-width: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px var(--shadow);
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 1rem;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .about-content {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .about-text {
+        text-align: left;
+    }
+
+    .about-image {
+        max-width: 300px;
+    }
+
     </style>
 </head>
 <body>
@@ -333,23 +400,17 @@
 
         <!-- About Us Section -->
         <div id="about-us" class="about-us" style="display: none;">
-            <h2>எங்களைப் பற்றி</h2>
+    <h2>எங்களைப் பற்றி</h2>
+    <div class="about-content">
+        <div class="about-text">
             <p>இந்த பாடல் புத்தகம் தமிழ் கிறிஸ்தவ சமூகத்திற்காக உருவாக்கப்பட்டது. எங்கள் நோக்கம் பாடல்கள் மூலம் ஆன்மீக பலத்தையும் ஊக்கத்தையும் வழங்குவதாகும்.</p>
+            <p>நாங்கள் ஒரு சிறிய குழு, இறைவனின் அன்பைப் பகிர்ந்து கொள்ளும் முயற்சியில் ஈடுபட்டுள்ளோம். இந்த பாடல்கள் உங்கள் வாழ்க்கையில் ஒளியையும் நம்பிக்கையையும் ஏற்படுத்தும் என்று நம்புகிறோம்.</p>
         </div>
-
-        <!-- Modal -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modal-title"></h2>
-                    <div class="modal-actions">
-                        <button id="bookmark-btn" aria-label="புத்தககுறி">☆</button>
-                        <button class="close" onclick="closeModal()" aria-label="மூடு">&times;</button>
-                    </div>
-                </div>
-                <div id="modal-lyrics" class="lyrics-container"></div>
-            </div>
+        <div class="about-image">
+            <img src="about-image.jpg" alt="About Us Image">
         </div>
+    </div>
+</div>
 
         <div id="loading" class="loading-container">
             <div class="loader"></div>
